@@ -8,7 +8,7 @@ services:
     hostname: ${COMPOSE_PROJECT_NAME}_dashboard
     restart: always
     ports:
-      - 5000:80
+      - 8080:8080
     networks:
       - network 
     

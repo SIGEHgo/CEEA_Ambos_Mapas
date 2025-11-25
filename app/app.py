@@ -18,7 +18,9 @@ archivos_html = [f for f in archivos if f.endswith(".html")]
 
 anios_nh = [re.sub(r"\.html", "", i) for i in archivos_html]
 anios_nh = [re.sub(r"Mapa_", "", i) for i in anios_nh]
+anios_nh = sorted(anios_nh, key=lambda x: int(x)) # Ordenamos
 anios_nh = {i: anio for i, anio in enumerate(anios_nh)}
+print(anios_nh)
 # anios_nh=0
 # archivos_html = [os.path.join("./assets/Datos/Mapas/", f) for f in archivos_html]
 
