@@ -387,6 +387,36 @@ modal_question = dbc.Modal(
     is_open=False,
 )
 
+
+
+
+# modal_popup = [
+#     dbc.ModalHeader(
+#         dbc.ModalTitle("Nombre del municipio")
+#     ),
+#     dbc.ModalBody(
+#         html.Div([
+#             html.Ol([
+#                 html.Li([
+#                     html.Strong("Cloro Residual Libre:"),
+#                     html.Ul([
+#                         html.Li("2020:"),
+#                         html.Li("2021:"),
+#                         html.Li('2022:'),
+#                         html.Li('2023:'),
+#                     ])
+#                 ]),
+#             ]),
+#             html.P("Numero de pozos en ese municipio: X", propierties),
+#             html.P("Numero de dosificadores en ese municipio: X"),
+#             html.P("Nombre de dosificadores: X"),
+#             html.P("Localidad donde se encuentra el dosificador: X"),
+#             html.P("Año de instalación de dosificadores: X"),
+#         ])
+#     )
+# ]
+
+
 ##################################
 ### Barra vertical interactiva ###
 ##################################

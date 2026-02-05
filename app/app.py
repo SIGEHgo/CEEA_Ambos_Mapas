@@ -12,6 +12,8 @@ import funciones_auxiliares
 from funciones_auxiliares import generarMapApartirEleccion_Municipal, generarMapApartirEleccion_Regional, obtenerCentroides_Municipales, obtenerCentroides_Regionales, generarMap_dosificadores
 from dash.exceptions import PreventUpdate
 from flask import Flask
+
+
 ##Cargamos variables de la segunda pagina:
 archivos = os.listdir("./assets/Datos/Mapas/") 
 archivos_html = [f for f in archivos if f.endswith(".html")]
