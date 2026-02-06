@@ -5,6 +5,8 @@ from dash_extensions.javascript import assign
 
 on_each_feature = assign("""
 function(feature, layer, context){
+    console.lo                     
+
     layer.bindTooltip(
         feature.properties.NOM_MUN
     );
