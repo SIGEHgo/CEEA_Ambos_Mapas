@@ -12,8 +12,7 @@ import geopandas as gpd
 import pandas as pd
 
 
-on_each_feature = assign("""
-                                          
+on_each_feature = assign("""                                  
 function(feature, layer, context){
                          
     layer.bindTooltip(
@@ -40,17 +39,16 @@ df = pd.DataFrame(df.drop(columns="geometry"))
 df_filtro = df[df['ID'] == 'San Salvador_Pacheco de Allende_Pozo Pacheco']
 df_filtro = df_filtro.drop(columns=['CVEGEO_LOC', 'ID', 'NOM_MUN', 'NOM_LOC', 'Fuente de abastecimiento'])
 
+df_filtro = df_filtro.T.reset_index()
 df_filtro.columns = df_filtro.iloc[0]
-df_filtro = df_filtro.iloc[1:] 
-
-### Ver como transponer una data.frame 
-
+df_filtro = df_filtro.iloc[1:]
 
 
 grid = dag.AgGrid(
     id="grid-regular-layout",
     rowData= df_filtro.to_dict("records"),
     columnDefs=[{"field": i} for i in df_filtro.columns],
+    dashGridOptions={"animateRows": False}
     )
 
 
@@ -115,35 +113,6 @@ def toggle_modal(feature, close_clicks, n_clicks, is_open):
         return not is_open
     return is_open
 
-# @app.callback(Output("modal", "children"), [Input("geojson-pozos", "clickData")])
-# def update_modal_content(feature):
-#     if feature is not None:
-#         properties = feature['properties']
-#         content = [
-#             html.H4(f"Fuente de abastecimiento: {properties['Fuente de abastecimiento']}"),
-#             html.P(f"Municipio: {properties['NOM_MUN']}"),
-#             html.P(f"Localidad: {properties['NOM_LOC']}"),
-#         ]
-#         return content
-#     return "No data available"
-
-
-@app.callback(
-    [Output("Titulo_modal", "children"), Output("cloro_2020", "children"), Output("cloro_2021", "children"), Output("cloro_2022", "children"), Output("cloro_2023", "children")],
-    [Input("geojson-pozos", "clickData")]
-)
-def update_modal_content(feature):
-    if feature is not None:
-        properties = feature['properties']
-        title = f"{properties['NOM_MUN']}"
-        content = [
-            f"2020: {properties['CLORO_2020']}",
-            f"2021: {properties['CLORO_2021']}",
-            f"2022: {properties['CLORO_2022']}",
-            f"2023: {properties['CLORO_2023']}",
-        ]
-        return title, content[0], content[1], content[2], content[3]
-    return "No data available", "", "", "", ""
 
 if __name__ == "__main__":
     app.run(debug=True)

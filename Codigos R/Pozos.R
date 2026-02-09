@@ -38,6 +38,51 @@ pozos = pozos |>
   ) |> 
   dplyr::relocate(ID, .before = geometry)
 
+pozos = pozos |> 
+  dplyr::mutate(
+    dplyr::across(
+      .cols = CVEGEO_LOC:ID,
+      .fns = ~ stringr::str_squish(.x)
+    )
+  )
+
+
+pozos = pozos |> 
+  dplyr::mutate(
+    dplyr::across(
+      .cols = CVEGEO_LOC:ID,
+      .fns = ~dplyr::if_else(condition = is.na(.x), true = "No hay dato", false = .x)
+    )
+  )
+
+pozos = pozos |> 
+  dplyr::mutate(
+    dplyr::across(
+      .cols = CVEGEO_LOC:ID,
+      .fns = ~dplyr::if_else(condition = .x == "ND", true = "No hay dato", false = .x)
+    )
+  )
+
+
+
+pozos = pozos |> 
+  dplyr::group_by(AÑO, ID) |> 
+  dplyr::mutate(
+    posicion = dplyr::row_number()
+  ) |> 
+  dplyr::relocate(posicion, .before = CVEGEO_LOC) |> 
+  dplyr::ungroup()
+
+
+pozos = pozos |> 
+  dplyr::mutate(
+    AÑO = dplyr::if_else(condition = posicion > 1, true = paste0(AÑO, "_", posicion) |>  stringr::str_squish() , false = AÑO)
+  ) |> 
+  dplyr::select(-posicion)
+
+
+conteo = pozos |>  sf::st_drop_geometry() |> 
+  dplyr::count(ID, sort = T)
 
 pozos |>  sf::write_sf("app/assets/Pozos.geojson")
 
