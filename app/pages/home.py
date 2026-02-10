@@ -6,6 +6,7 @@ import dash
 import dash_leaflet as dl
 import dash_leaflet.express as dlx
 import geopandas as gpd
+from app import anios_nh
 
 import dash_bootstrap_components as dbc  # Importa Dash Bootstrap Components
 from dash import Dash, html, Output, Input, State, no_update,dcc
@@ -52,6 +53,14 @@ style_handle = assign("""function(feature, context){
     return style;
 }""")
 
+on_each_feature = assign("""function(feature, layer, context){
+    layer.bindTooltip(
+        `
+            <p><b>Municipio:</b> ${feature.properties.NOM_MUN}</p>
+            <p><b>Valor:</b> ${feature.properties["Valor-actual"]}</p>`
+    );
+}""" )
+
 # Clases para la paleta de colores
 classes = [-2, -0.0000000001, 0.199999999999999999, 1.5]
 colorscale = ['rgb(205,205,205)', 'rgb(255,0,0)', 'rgb(112,173,71)', 'rgb(255, 192, 0)']
@@ -77,6 +86,7 @@ colorbar = dlx.categorical_colorbar(
 geojson = dl.GeoJSON(
     data=map_default_municipal,
     style=style_handle,
+    onEachFeature=on_each_feature,
     zoomToBounds=False,
     zoomToBoundsOnClick=True,
     hoverStyle=arrow_function(dict(weight=5, color='#666', dashArray='')),
@@ -232,11 +242,32 @@ botton_regional = dbc.Button(
     style={'width': '70%', 'height': '6vh', 'margin': '1vh 10% 1vh 10%'}
 )
 
+botton_pozo = dbc.Button(
+    "Pozos",
+    id= "botton_pozo",
+    color="primary",
+    n_clicks=0,
+    size="sm",
+    outline=True,
+    className="button-custom",
+    style={'width': '70%', 'height': '6vh', 'margin': '1vh 10% 1vh 10%'}
+)
+
+
+
 slider_periodo = dcc.Slider(
     id="slider_periodo",
     step=None,
     marks=anios,
     value=list(anios.keys())[-1],
+    className="slider-custom"
+)
+
+slider_periodo_pozos = dcc.Slider(
+    id="slider_periodo_pozos",
+    step=None,
+    marks=anios_nh,
+    value=list(anios_nh.keys())[-1],
     className="slider-custom"
 )
 
@@ -269,7 +300,11 @@ offcanvas_layers = html.Div(
                 html.Div( 
                     children= [ botton_municipal, botton_regional],
                     style={"display": "flex", "justifyContent": "space-around"}
-            ),
+                ),
+                html.Div(
+                    children= [botton_pozo],
+                    style={"display": "flex", "justifyContent": "center"}
+                ),
                 html.Br(),
                 html.H5("Periodo", style={'color': 'black'}),
                 slider_periodo,

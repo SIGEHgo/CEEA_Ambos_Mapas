@@ -17,6 +17,9 @@ datos = datos |>
 
 
 
+
+
+
 datos = datos |> 
   sf::st_drop_geometry() |> 
   dplyr::group_by(Región) |> 
@@ -64,6 +67,25 @@ datos = datos |>
     dplyr::any_of(orden)
   )
 
+datos = datos |> 
+  dplyr::mutate(
+    dplyr::across(
+      .cols = CLORO_2020:CLORO_2024,
+      .fns = ~ dplyr::if_else(condition = is.na(.x), true = -1, false = .x)
+      )
+  )
 
+geometrias = sf::read_sf("app/assets/Datos/shp/Regional_.shp")
+geometrias = geometrias |> 
+  dplyr::select(Región,geometry)
+
+datos = datos |> 
+  dplyr::mutate(
+    Región = Región |>  gsub(pattern = "Región", replacement = "") |> stringr::str_squish() 
+    ) |> 
+  dplyr::left_join(y = geometrias, by = c("Región" = "Región"))
+
+
+datos = datos |>  sf::st_as_sf()
 
 datos |>  sf::write_sf("app/assets/Acciones_de_desinfeccion_regional.geojson")

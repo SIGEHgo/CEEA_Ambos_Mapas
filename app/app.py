@@ -29,16 +29,21 @@ print(anios_nh)
 
 
 #Carga de datos y definición de variables
-shp_municipal = gpd.read_file("./assets/Datos/shp/Historicos_Acciones.shp")
-shp_regional = gpd.read_file("./assets/Datos/shp/Regional_.shp")
+shp_municipal = gpd.read_file("./assets/Acciones_de_desinfeccion_municipal.geojson")
+shp_regional = gpd.read_file("./assets/Acciones_de_desinfeccion_regional.geojson")
 shp_dosificadores = gpd.read_file("./assets/Datos/shp/Dosidicadores.shp")
+geojson_pozo = gpd.read_file("./assets/Pozos.geojson")
+
 columns_list = shp_municipal.columns.tolist()
 opciones_cloro = [col for col in columns_list if 'CLORO' in col]
 anios = {i: re.sub(r"CLORO_", "", col) for i, col in enumerate(opciones_cloro)}
 
-map_default_municipal = funciones_auxiliares.generarMapApartirEleccion_Municipal(arhivo_sph=shp_municipal, lista_eleccion=opciones_cloro[0])
-map_default_regional = funciones_auxiliares.generarMapApartirEleccion_Regional(arhivo_sph=shp_regional, lista_eleccion=opciones_cloro[0])
+map_default_municipal = funciones_auxiliares.generarMapApartirEleccion_Municipal(geojson=shp_municipal, lista_eleccion=opciones_cloro[0])
+map_default_regional = funciones_auxiliares.generarMapApartirEleccion_Regional(geojson=shp_regional, lista_eleccion=opciones_cloro[0])
+map_default_pozo = funciones_auxiliares.generarMapApartirEleccion_Municipal(geojson=geojson_pozo, lista_eleccion= "ID")
 map_dosificadores = funciones_auxiliares.generarMap_dosificadores(arhivo_sph = shp_dosificadores)
+
+#print(map_default_municipal)
 
 municipal_geo = funciones_auxiliares.obtenerCentroides_Municipales(shp_municipal)
 print(len(municipal_geo.latitud.unique()))
@@ -128,17 +133,19 @@ def modal_question_open(n1, n2, is_open):
         Output("current_map", "data"),
         Output("botton_municipal", "className"),
         Output("botton_regional", "className"),
-        Output("buscador", "options")
+        Output("botton_pozo", "className"),
+        Output("buscador", "options"),
     ],
     [
         Input("botton_municipal", "n_clicks"),
-        Input("botton_regional", "n_clicks")
+        Input("botton_regional", "n_clicks"),
+        Input("botton_pozo", "n_clicks"),
     ],
     State("current_map", "data"),
     State("slider_periodo","value"),
     prevent_initial_call=True  # evita que se dispare automáticamente al cargar
 )
-def toggle_active(mun_clicks, reg_clicks, current_map,valor_actual_slider):
+def toggle_active(mun_clicks, reg_clicks, pozo_clicks, current_map, valor_actual_slider):
     ctx = dash.callback_context
 
     if not ctx.triggered:
@@ -149,21 +156,27 @@ def toggle_active(mun_clicks, reg_clicks, current_map,valor_actual_slider):
     if clicked == "botton_municipal":
         # Se genera el mapa para el caso municipal
         new_data = funciones_auxiliares.generarMapApartirEleccion_Municipal(
-            arhivo_sph=shp_municipal, lista_eleccion=opciones_cloro[valor_actual_slider]
+            geojson=shp_municipal, lista_eleccion=opciones_cloro[valor_actual_slider]
         )
         opciones = [{'label': mun, 'value': latitud} 
                     for mun, latitud in zip(municipal_geo.NOM_MUN, municipal_geo.latitud)]
-        return new_data, "municipal", "button-custom active", "button-custom", opciones
+        return new_data, "municipal", "button-custom active", "button-custom", "button-custom", opciones
 
     elif clicked == "botton_regional":
         # Se genera el mapa para el caso regional
         new_data = funciones_auxiliares.generarMapApartirEleccion_Regional(
-            arhivo_sph=shp_regional, lista_eleccion=opciones_cloro[valor_actual_slider]
+            geojson=shp_regional, lista_eleccion=opciones_cloro[valor_actual_slider]
         )
         opciones = [{'label': mun, 'value': lat} 
                     for mun, lat in zip(regional_geo.Región, regional_geo.latitud)]
-        return new_data, "regional", "button-custom", "button-custom active", opciones
-
+        return new_data, "regional", "button-custom", "button-custom active", "button-custom", opciones
+    elif clicked == "botton_pozo":
+        # Se genera el mapa para el caso pozo
+        new_data = funciones_auxiliares.generarMapApartirEleccion_Municipal(
+            geojson=geojson_pozo, lista_eleccion="ID"
+        )
+        opciones = None
+        return new_data, "pozo", "button-custom", "button-custom", "button-custom active", opciones
     raise PreventUpdate
 
 
@@ -180,10 +193,10 @@ def actualizar_mapa_por_slider(indice, current_map):
     columna = opciones_cloro[indice]
     if current_map == "municipal":
         map_default = funciones_auxiliares.generarMapApartirEleccion_Municipal(
-            arhivo_sph=shp_municipal, lista_eleccion=columna)
+            geojson=shp_municipal, lista_eleccion=columna)
     else:
         map_default = funciones_auxiliares.generarMapApartirEleccion_Regional(
-            arhivo_sph=shp_regional, lista_eleccion=columna)
+            geojson=shp_regional, lista_eleccion=columna)
     return map_default
 
 

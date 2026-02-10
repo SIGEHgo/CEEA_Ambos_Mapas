@@ -5,47 +5,17 @@ from dash_extensions.javascript import assign
 import geopandas as gpd
 import pandas as pd
 
-def generarMapApartirEleccion_Municipal(arhivo_sph, lista_eleccion):
-    arhivo_sph["Valor-actual"] = arhivo_sph[lista_eleccion]
-    geojson_data = {
-        "type": "FeatureCollection",        # Dices que es geojson
-        "features": [                       # Lista de los objetos
-            {
-                "type": "Feature",                  # Cada objeto que se vaya creando es de ese tipo
-                "geometry": feature["geometry"],    # Le pone la geometria
-                "properties": {                     # Cada objeto va ha tener propiedades
-                    **feature["properties"],        # Pasa por filas
-                    "tooltip": f"Municipio: <b>{feature['properties'].get('NOM_MUN','N/A')}</b> ", # Pasar Mouse por encima, le puedo agragar un popup,
-                    "popup": (f"Municipio: <b>{feature['properties'].get('NOM_MUN','N/A')}</b><br>"
-                              f"CI: <b> {round(feature['properties'].get('Valor-actual'), 2) if feature['properties'].get('Valor-actual') != -1 else 'No hay dato'} mg/L</b> ")
-                }
-            }
-            for idx, feature in enumerate(arhivo_sph.__geo_interface__["features"])        # map_ es del tipo geopandas
-        ]
-    }
-    return geojson_data
+def generarMapApartirEleccion_Municipal(geojson, lista_eleccion):
+    geojson["Valor-actual"] = geojson[lista_eleccion]
+    return geojson.__geo_interface__
 
 
 
-def generarMapApartirEleccion_Regional(arhivo_sph, lista_eleccion):
-    arhivo_sph["Valor-actual"] = arhivo_sph[lista_eleccion]
-    geojson_data = {
-        "type": "FeatureCollection",        # Dices que es geojson
-        "features": [                       # Lista de los objetos
-            {
-                "type": "Feature",                  # Cada objeto que se vaya creando es de ese tipo
-                "geometry": feature["geometry"],    # Le pone la geometria
-                "properties": {                     # Cada objeto va ha tener propiedades
-                    **feature["properties"],        # Pasa por filas
-                    "tooltip": f"Región: <b>{feature['properties'].get('Región','N/A')}</b>", # Pasar Mouse por encima, le puedo agragar un popup
-                    "popup": (f"Región: <b>{feature['properties'].get('Región','N/A')}</b><br>"
-                              f"CI: <b>{round(feature['properties'].get('Valor-actual'), 2) if feature['properties'].get('Valor-actual') != -1 else 'No hay dato'} mg/L </b>")
-                }
-            }
-            for idx, feature in enumerate(arhivo_sph.__geo_interface__["features"])        # map_ es del tipo geopandas
-        ]
-    }
-    return geojson_data
+def generarMapApartirEleccion_Regional(geojson, lista_eleccion):
+    geojson["Valor-actual"] = geojson[lista_eleccion]
+    return geojson.__geo_interface__
+
+
 
 def generarMap_dosificadores(arhivo_sph):
     geojson_data = {
