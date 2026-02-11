@@ -24,6 +24,8 @@ from app import map_dosificadores
 from app import anios
 from app import municipal_geo
 
+import dash_ag_grid as dag
+
 # Carga de datos y definición de variables
 # shp_municipal = gpd.read_file("../assets/Datos/shp/Historicos_Acciones.shp")
 # shp_regional = gpd.read_file("../assets/Datos/shp/Regional_.shp")
@@ -533,6 +535,77 @@ dash.register_page(__name__,
                    title='Acciones de desinfección')
 
 
+
+popup_texto_localidad = html.P(id="popup_texto_localidad", children="Hola")
+popup_texto_municicio = html.P(id="popup_texto_municipio")
+popup_texto_region = html.P(id="popup_texto_region")
+popup_texto_pozo = html.P(id="popup_texto_pozo")
+
+popup_tabla_pozo = dag.AgGrid(
+    id="popup_tabla_pozo",
+    rowData=[],
+    columnDefs=[],
+    defaultColDef={"flex": 1, "sortable": True, "filter": True},
+    style={"height": "50vh", "width": "100%"}
+)
+
+popup_modal_pozo = dbc.Modal(
+    [
+        dbc.ModalHeader(popup_texto_pozo),
+        dbc.ModalBody(children=[
+                popup_texto_municicio,
+                popup_texto_localidad,
+                popup_texto_region,
+                popup_tabla_pozo
+            ]),
+        dbc.ModalFooter(
+            children=[
+                dbc.Button("Descargar", id="descargar_pozo", className="button-custom", n_clicks=0),    
+                dbc.Button("Cerrar", id="close_popup_pozo", className="button-custom", n_clicks=0)
+            ]
+        ),
+    ],
+    id="popup_modal_pozo",
+    size="xl",
+    is_open=False
+)
+
+
+entorno_impresion_pozo = html.Div(
+    [
+        html.Div(
+            [
+                html.Img(src="assets/Imagenes/Planeacion_dorado.png", style={"height": "50px", "margin-right": "10px"}),
+                html.Img(src="assets/Imagenes/CEAA_dorado.png", style={"height": "50px", "margin-right": "10px"}),
+            ],
+            style={"flex": 1, "display": "flex", "align-items": "center", "justifyContent": "space-evenly"}
+        ),
+        html.Div(
+            [
+                popup_texto_pozo
+            ],
+            style={"display": "flex", "justify-content": "center", "align-items": "center"}
+        ),
+        html.Div(
+                [
+                    popup_texto_municicio,
+                    popup_texto_localidad,
+                    popup_texto_region
+                ],
+                style={"flex": 1, "display": "flex", "align-items": "center", "justifyContent": "space-evenly"}
+            ),
+        html.Div(
+            [
+                popup_tabla_pozo,
+            ],
+            style={"display": "flex", "justify-content": "center", "align-items": "center"}
+        ),
+    ]
+)
+
+
+
+
 layout = dbc.Container([
     encabezado,
     mapa,
@@ -540,10 +613,11 @@ layout = dbc.Container([
     offcanvas_search,
     modal_information,
     modal_question,
-    
-    
     simbologia_imagen,
+    popup_modal_pozo,
+    entorno_impresion_pozo,
     dcc.Store(id="current_map", data="municipal", storage_type="session"),  # Almacena el estado actual del mapa
+
 ],
     fluid=True,
     style={'height': '100vh', 'width': '100vw', 'padding': '0', 'margin': '0'}

@@ -144,7 +144,7 @@ app.layout = html.Div(
     
     Input("geojson-pozos", "clickData"),
     Input("close-modal", "n_clicks"),
-    Input("geojson-pozos", "n_clicks"),
+    Input("geojson-pozos", "n_clicks"),   # Para que pueda hacer clic al mismo pozo varias veces
     State("modal_popup", "is_open"),
 )
 def toggle_modal(feature, close_clicks, n_clicks, is_open):

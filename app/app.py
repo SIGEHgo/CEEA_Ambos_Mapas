@@ -2,9 +2,10 @@ import dash
 import dash_leaflet as dl
 import dash_leaflet.express as dlx
 import geopandas as gpd
+import pandas as pd
 import os
 import dash_bootstrap_components as dbc  # Importa Dash Bootstrap Components
-from dash import Dash, html, Output, Input, State, no_update,dcc
+from dash import Dash, html, Output, Input, State, no_update,dcc, ctx
 import re
 from dash_extensions.javascript import arrow_function, assign
 import geopandas as gpd
@@ -13,7 +14,7 @@ from funciones_auxiliares import generarMapApartirEleccion_Municipal, generarMap
 from dash.exceptions import PreventUpdate
 from flask import Flask
 
-
+import dash_ag_grid as dag
 
 
 
@@ -60,23 +61,9 @@ server = Flask(__name__)
 
 app = dash.Dash(__name__,server, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME, dbc.icons.BOOTSTRAP,"assets/Style.css"],use_pages=True)
 app.layout = html.Div([
-    dash.page_container,
-
+    dash.page_container
 ])
-# app.layout = dbc.Container([
-#     dash.page_container,
-#     encabezado,
-#     mapa,
-#     offcanvas_layers,
-#     offcanvas_search,
-#     modal_information,
-#     modal_question,
-#     simbologia_imagen,
-#     dcc.Store(id="current_map", data="municipal"),  # Almacena el estado actual del mapa
-# ],
-#     fluid=True,
-#     style={'height': '100vh', 'width': '100vw', 'padding': '0', 'margin': '0'}
-# )
+
 
 
 #####################################
@@ -295,6 +282,57 @@ def update_map(latitud, current_map):
 
     # Actualiza el viewport del mapa con la nueva ubicación
     return {"center": [latitud, longitud], "zoom": 12}
+
+@app.callback(
+    Output("popup_modal_pozo", "is_open"),
+
+    Output("popup_texto_localidad", "children"),
+    Output("popup_texto_municipio", "children"),
+    Output("popup_texto_region", "children"),
+    Output("popup_texto_pozo", "children"),
+
+    Output("popup_tabla_pozo", "rowData"),
+    Output("popup_tabla_pozo", "columnDefs"),
+
+    Input("geojson", "clickData"),
+    Input("close_popup_pozo", "n_clicks"),
+    Input("geojson", "n_clicks"),
+    State("popup_modal_pozo", "is_open"),
+    State("current_map", "data"),
+)
+def toggle_popup_pozo(feature, close_clicks, n_clicks, is_open, current_map):
+
+    trigger_id = ctx.triggered_id
+    print("El trigger id es: ", trigger_id)
+
+    if trigger_id == "geojson" and feature and current_map == "pozo":
+        print("Si se esta ejecutando el callback del popup")
+        properties = feature["properties"]
+        pozo_id = properties.get("ID")
+        
+        abastecimiento = properties.get("Fuente de abastecimiento", "N/A")
+        nom_municipio = properties.get("NOM_MUN", "N/A")
+        nom_localidad = properties.get("NOM_LOC", "N/A")
+
+        
+        df_filtro = geojson_pozo[geojson_pozo["ID"] == pozo_id].drop(columns=["geometry"], errors='ignore')
+        columnas_eliminar = ["CVEGEO_LOC", "ID", "NOM_MUN", "NOM_LOC", "Fuente de abastecimiento"]
+        df_filtro = df_filtro.drop(columns=columnas_eliminar, errors='ignore')
+
+        df_filtro = df_filtro.T.reset_index()
+        df_filtro.columns = df_filtro.iloc[0]
+        df_filtro = df_filtro.iloc[1:]
+        
+       
+
+        return (True, nom_localidad, f"Municipio: {nom_municipio}", "", f"Fuente de Abastecimiento: {abastecimiento}", df_filtro.to_dict('records'), [{"field": i} for i in df_filtro.columns])
+    
+    elif trigger_id == "close_popup_pozo":
+        return (False, no_update, no_update, no_update, no_update, no_update, no_update)
+    
+    return (is_open, no_update, no_update, no_update, no_update, no_update, no_update)
+
+   
 
 
 
