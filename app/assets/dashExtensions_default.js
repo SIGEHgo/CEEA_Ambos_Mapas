@@ -16,11 +16,39 @@ window.dashExtensions = Object.assign({}, window.dashExtensions, {
             return style;
         },
         function1: function(feature, layer, context) {
-            layer.bindTooltip(
-                `
-            <p><b>Municipio:</b> ${feature.properties.NOM_MUN}</p>
-            <p><b>Valor:</b> ${feature.properties["Valor-actual"]}</p>`
-            );
+
+
+            const sesion = sessionStorage.getItem('current_map');
+            const modo = JSON.parse(sesion);
+            console.log("Mapa actual:", modo); // Verificar el valor de modo en la consola
+
+            if (modo === "municipal") {
+                layer.bindTooltip(
+                    `
+             <p> Municipio: <b>${feature.properties.NOM_MUN}</b> </p>
+             <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"]} </b> </p>
+        `
+                );
+            }
+
+            if (modo === "regional") {
+                layer.bindTooltip(
+                    `
+             <p> Región: <b>${feature.properties["Región"]}</b> </p>
+             <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"]} </b> </p>
+        `
+                );
+            }
+
+            if (modo === "pozo") {
+                layer.bindTooltip(
+                    `
+            <p> Fuente de Abastecimiento: <b> ${feature.properties["Fuente de abastecimiento"]} </b> </p>
+            <p> Municipio :<b> ${feature.properties.NOM_MUN} </b> </p>
+            <p> Localidad :<b> ${feature.properties.NOM_LOC} </b> </p> 
+        `
+                );
+            }
         }
     }
 });

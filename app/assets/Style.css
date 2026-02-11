@@ -48,6 +48,10 @@ path.leaflet-interactive:focus {
     padding: 1vh 2vw !important;
 }
 
+.slider-custom-off{
+    display: none !important;
+}
+
 
 .sortable-handler {
   touch-action: none;

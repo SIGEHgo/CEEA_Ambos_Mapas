@@ -15,6 +15,10 @@ def generarMapApartirEleccion_Regional(geojson, lista_eleccion):
     geojson["Valor-actual"] = geojson[lista_eleccion]
     return geojson.__geo_interface__
 
+def generarMapApartirEleccion_Pozo(geojson, lista_eleccion):
+    geojson = geojson[geojson["AÑO"] == str(lista_eleccion)]
+    return geojson.__geo_interface__
+
 
 
 def generarMap_dosificadores(arhivo_sph):

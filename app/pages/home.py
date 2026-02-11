@@ -53,13 +53,42 @@ style_handle = assign("""function(feature, context){
     return style;
 }""")
 
+
 on_each_feature = assign("""function(feature, layer, context){
-    layer.bindTooltip(
+                        
+                          
+    const sesion = sessionStorage.getItem('current_map');
+    const modo = JSON.parse(sesion);
+    console.log("Mapa actual:", modo);  // Verificar el valor de modo en la consola
+
+    if (modo === "municipal") {
+        layer.bindTooltip(
+         `
+             <p> Municipio: <b>${feature.properties.NOM_MUN}</b> </p>
+             <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"]} </b> </p>
         `
-            <p><b>Municipio:</b> ${feature.properties.NOM_MUN}</p>
-            <p><b>Valor:</b> ${feature.properties["Valor-actual"]}</p>`
-    );
-}""" )
+        );
+    }
+
+    if (modo === "regional") {
+        layer.bindTooltip(
+         `
+             <p> Región: <b>${feature.properties["Región"]}</b> </p>
+             <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"]} </b> </p>
+        `
+        );
+    }
+
+    if (modo === "pozo") {
+        layer.bindTooltip(
+         `
+            <p> Fuente de Abastecimiento: <b> ${feature.properties["Fuente de abastecimiento"]} </b> </p>
+            <p> Municipio :<b> ${feature.properties.NOM_MUN} </b> </p>
+            <p> Localidad :<b> ${feature.properties.NOM_LOC} </b> </p> 
+        `
+        );
+    }
+}""")
 
 # Clases para la paleta de colores
 classes = [-2, -0.0000000001, 0.199999999999999999, 1.5]
@@ -101,23 +130,6 @@ geojson_dosificadores = dl.GeoJSON(
 ### Definición de Componentes del Layout ###
 ############################################
 
-map_icon = html.I(id="map_icon", className="bi bi-map", style={'margin': '0', 'paddin': '0'})
-botton_map= dbc.Button(
-    [map_icon],
-    id="navigate-button",
-    color="primary",
-    n_clicks=0,
-    size="sm",
-    outline=True,
-    className="button-custom-map",
-    style={'width': '70%', 'height': '6vh', 'margin': '1vh 10% 1vh 10%'}
-)
-
-tooltip_map = dbc.Tooltip(
-    "Abre el mapa de Indicadores de Calidad del Agua en una nueva ventana",  # Texto que se muestra
-    target="navigate-button",   # Debe coincidir con el id del botón
-    placement="top"              
-)
 
 encabezado = dbc.Row([
     dbc.Col(
@@ -127,7 +139,7 @@ encabezado = dbc.Row([
     ),
     dbc.Col(
         html.A(
-            html.Img(src="./assets/Imagenes/Planeacion_dorado.png", style={'width': '100%', 'height': '70%', 'padding': '1vh 0 0 10px'}),
+            html.Img(src="./assets/Imagenes/Planeacion_dorado.png", style={'width': '100%', 'height': '60%', 'padding': '1vh 0 0 10px'}),
             href="http://sigeh.hidalgo.gob.mx/",
             target="_blank"
         ),
@@ -136,20 +148,13 @@ encabezado = dbc.Row([
     ),
     dbc.Col(
         html.A(
-            html.Img(src="./assets/Imagenes/CEAA_dorado.png", style={'width': '75%', 'height': '75%', 'padding': '1vh 0 0 10px'}),
+            html.Img(src="./assets/Imagenes/CEAA_dorado.png", style={'width': '75%', 'height': '70%', 'padding': '1vh 0 0 10px'}),
             href="https://ceaa.hidalgo.gob.mx/",
             target="_blank"
         ),
-        width=2, xxl=2, xl=2, lg=2, md=2, sm=5, xs=5,
+        width=3, xxl=3, xl=3, lg=3, md=3, sm=6, xs=6,
         style={'backgroundColor': 'rgb(157, 36, 73)', 'padding': '0', 'margin': '0'}
-    ),
-    dbc.Col(
-            children= [botton_map,tooltip_map,
-                       html.P("Explora otro mapa", style={'color': 'white', 'margin': '0', 'padding': '0vh 0 0vh 10%', 'fontSize': '11px'})],
-            width = 1,
-            xxl = 1, xl = 1, lg = 1, md = 1, sm = 1,  xs = 1, 
-            style = {'backgroundColor': '#9C2448', 'padding': '0', 'margin':'0'}
-        )
+    )
 ],
     style={"height": "12vh", 'width': '100vw', 'padding': '0', 'margin': '0'}
 )
@@ -268,7 +273,8 @@ slider_periodo_pozos = dcc.Slider(
     step=None,
     marks=anios_nh,
     value=list(anios_nh.keys())[-1],
-    className="slider-custom"
+    className="slider-custom-off",
+
 )
 
 play_pause_icon = html.I(id="play_pause", className="bi bi-play-fill")
@@ -291,6 +297,13 @@ intervalo_tiempo = dcc.Interval(
     disabled=True
 )
 
+intervalo_tiempo_pozos = dcc.Interval(
+    id = "intervalo_tiempo_pozos",
+    interval = 2500,
+    n_intervals = 2012,
+    disabled = True
+)
+
 
 offcanvas_layers = html.Div(
     [
@@ -308,11 +321,13 @@ offcanvas_layers = html.Div(
                 html.Br(),
                 html.H5("Periodo", style={'color': 'black'}),
                 slider_periodo,
+                slider_periodo_pozos,
                 html.Br(),
                 html.Br(),
                 html.H5("Explora el tiempo", style={'color': 'black'}),
                 botton_time,
-                intervalo_tiempo
+                intervalo_tiempo,
+                intervalo_tiempo_pozos
             ],
             id="offcanvas_layers",
             title= html.H4("Capas de información", style={'textAlign': 'center', 'color': 'black'}),
@@ -423,35 +438,6 @@ modal_question = dbc.Modal(
 )
 
 
-
-
-# modal_popup = [
-#     dbc.ModalHeader(
-#         dbc.ModalTitle("Nombre del municipio")
-#     ),
-#     dbc.ModalBody(
-#         html.Div([
-#             html.Ol([
-#                 html.Li([
-#                     html.Strong("Cloro Residual Libre:"),
-#                     html.Ul([
-#                         html.Li("2020:"),
-#                         html.Li("2021:"),
-#                         html.Li('2022:'),
-#                         html.Li('2023:'),
-#                     ])
-#                 ]),
-#             ]),
-#             html.P("Numero de pozos en ese municipio: X", propierties),
-#             html.P("Numero de dosificadores en ese municipio: X"),
-#             html.P("Nombre de dosificadores: X"),
-#             html.P("Localidad donde se encuentra el dosificador: X"),
-#             html.P("Año de instalación de dosificadores: X"),
-#         ])
-#     )
-# ]
-
-
 ##################################
 ### Barra vertical interactiva ###
 ##################################
@@ -548,7 +534,6 @@ dash.register_page(__name__,
 
 
 layout = dbc.Container([
-    dcc.Location(id='url', refresh=True),
     encabezado,
     mapa,
     offcanvas_layers,
@@ -558,7 +543,7 @@ layout = dbc.Container([
     
     
     simbologia_imagen,
-    dcc.Store(id="current_map", data="municipal"),  # Almacena el estado actual del mapa
+    dcc.Store(id="current_map", data="municipal", storage_type="session"),  # Almacena el estado actual del mapa
 ],
     fluid=True,
     style={'height': '100vh', 'width': '100vw', 'padding': '0', 'margin': '0'}
