@@ -571,41 +571,6 @@ popup_modal_pozo = dbc.Modal(
 )
 
 
-entorno_impresion_pozo = html.Div(
-    [
-        html.Div(
-            [
-                html.Img(src="assets/Imagenes/Planeacion_dorado.png", style={"height": "50px", "margin-right": "10px"}),
-                html.Img(src="assets/Imagenes/CEAA_dorado.png", style={"height": "50px", "margin-right": "10px"}),
-            ],
-            style={"flex": 1, "display": "flex", "align-items": "center", "justifyContent": "space-evenly"}
-        ),
-        html.Div(
-            [
-                popup_texto_pozo
-            ],
-            style={"display": "flex", "justify-content": "center", "align-items": "center"}
-        ),
-        html.Div(
-                [
-                    popup_texto_municicio,
-                    popup_texto_localidad,
-                    popup_texto_region
-                ],
-                style={"flex": 1, "display": "flex", "align-items": "center", "justifyContent": "space-evenly"}
-            ),
-        html.Div(
-            [
-                popup_tabla_pozo,
-            ],
-            style={"display": "flex", "justify-content": "center", "align-items": "center"}
-        ),
-    ]
-)
-
-
-
-
 layout = dbc.Container([
     encabezado,
     mapa,
@@ -615,9 +580,7 @@ layout = dbc.Container([
     modal_question,
     simbologia_imagen,
     popup_modal_pozo,
-    entorno_impresion_pozo,
     dcc.Store(id="current_map", data="municipal", storage_type="session"),  # Almacena el estado actual del mapa
-
 ],
     fluid=True,
     style={'height': '100vh', 'width': '100vw', 'padding': '0', 'margin': '0'}
