@@ -67,7 +67,7 @@ on_each_feature = assign("""function(feature, layer, context){
         layer.bindTooltip(
          `
              <p> Municipio: <b>${feature.properties.NOM_MUN}</b> </p>
-             <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"]} </b> </p>
+             <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"] == -1 ? "No hay dato" : feature.properties["Valor-actual"]}</b> </p>
         `
         );
     }
@@ -535,11 +535,113 @@ dash.register_page(__name__,
                    title='Acciones de desinfección')
 
 
+#################################################
+### Generar entonrnos de descarga y impresion ###
+#################################################
 
-popup_texto_localidad = html.P(id="popup_texto_localidad", children="Hola")
+### Municipal
+popup_texto_municipio_municipal = html.P(id="popup_texto_municipio_municipal")
+impresion_texto_municipio_municipal = html.P(id="impresion_texto_municipio_municipal")
+
+popup_texto_numero_pozos_municipal = html.P(id="popup_texto_numero_pozos_municipal")
+impresion_texto_numero_pozos_municipal = html.P(id="impresion_texto_numero_pozos_municipal")
+
+popup_tabla_cloro_municipal = dag.AgGrid(
+    id="popup_tabla_cloro_municipal",
+    rowData=[],
+    columnDefs=[],
+    defaultColDef={"flex": 1, "sortable": True, "filter": True},
+    style={"height": "34vh", "width": "100%"}
+)
+
+impresion_tabla_cloro_municipal = dag.AgGrid(
+    id="impresion_tabla_cloro_municipal",
+    rowData=[],
+    columnDefs=[],
+    defaultColDef={"flex": 1, "sortable": True, "filter": True},
+    style={"height": "", "width": ""},
+    dashGridOptions={"domLayout": "print"}
+)
+
+popup_tabla_dosificadores_municipal = dag.AgGrid(
+    id="popup_tabla_dosificadores_municipal",
+    rowData=[],
+    columnDefs=[],
+    defaultColDef={"flex": 1, "sortable": True, "filter": True},
+    style={"height": "30vh", "width": "100%"}
+)
+
+impresion_tabla_dosificadores_municipal = dag.AgGrid(
+    id="impresion_tabla_dosificadores_municipal",
+    rowData=[],
+    columnDefs=[],
+    defaultColDef={"flex": 1, "sortable": True, "filter": True},
+    style={"height": "", "width": ""},
+    dashGridOptions={"domLayout": "print"}
+)
+
+
+popup_modal_municipal = dbc.Modal(
+    [
+        dbc.ModalHeader(popup_texto_municipio_municipal),
+        dbc.ModalBody(children=[
+            popup_tabla_cloro_municipal,
+            html.P(children= "Acerca del municipio:"),
+            popup_texto_numero_pozos_municipal,
+            popup_tabla_dosificadores_municipal
+            ]),
+        dbc.ModalFooter(
+            children=[
+                dbc.Button("Descargar", id="descargar_municipal", className="button-custom", n_clicks=0),    
+                dbc.Button("Cerrar", id="close_popup_municipal", className="button-custom", n_clicks=0)
+            ]
+        ),
+    ],
+    id="popup_modal_municipal",
+    size="xl",
+    is_open=False
+)
+
+impresion_entorno_municipal = html.Div(
+    [
+        html.Div(
+            [
+                html.Img(src="assets/Imagenes/Planeacion_dorado.png", style={"height": "50px", "margin-right": "10px"}),
+                html.Img(src="assets/Imagenes/CEAA_dorado.png", style={"height": "50px", "margin-right": "10px"}),
+            ],
+            style={"flex": 1, "display": "flex", "align-items": "center", "justifyContent": "space-evenly"}
+        ),
+        html.Div(
+            [
+                impresion_texto_municipio_municipal
+            ],
+            style={"display": "flex", "justify-content": "center", "align-items": "center"}
+        ),             
+        dbc.ModalBody(
+            [
+                impresion_tabla_cloro_municipal,
+                impresion_texto_numero_pozos_municipal,
+                impresion_tabla_dosificadores_municipal,
+            ],
+            style={"display": "flex", "justify-content": "center", "align-items": "center"}
+        ),
+    ],
+    id="impresion_entorno_municipal",
+    #style={"display":"none"}
+)
+
+### Pozo
+
+popup_texto_localidad = html.P(id="popup_texto_localidad")
 popup_texto_municicio = html.P(id="popup_texto_municipio")
 popup_texto_region = html.P(id="popup_texto_region")
 popup_texto_pozo = html.P(id="popup_texto_pozo")
+
+impresion_texto_localidad = html.P(id="impresion_texto_localidad")
+impresion_texto_municicio = html.P(id="impresion_texto_municipio")
+impresion_texto_region = html.P(id="impresion_texto_region")    
+impresion_texto_pozo = html.P(id="impresion_texto_pozo")
+
 
 popup_tabla_pozo = dag.AgGrid(
     id="popup_tabla_pozo",
@@ -547,6 +649,15 @@ popup_tabla_pozo = dag.AgGrid(
     columnDefs=[],
     defaultColDef={"flex": 1, "sortable": True, "filter": True},
     style={"height": "50vh", "width": "100%"}
+)
+
+impresion_tabla_pozo = dag.AgGrid(
+    id="impresion_tabla_pozo",
+    rowData=[],
+    columnDefs=[],
+    defaultColDef={"flex": 1, "sortable": True, "filter": True},        
+    style={"height": "", "width": ""},
+    dashGridOptions={"domLayout": "print"}
 )
 
 popup_modal_pozo = dbc.Modal(
@@ -570,6 +681,42 @@ popup_modal_pozo = dbc.Modal(
     is_open=False
 )
 
+impresion_entorno_pozo = html.Div(
+    [
+        html.Div(
+            [
+                html.Img(src="assets/Imagenes/Planeacion_dorado.png", style={"height": "50px", "margin-right": "10px"}),
+                html.Img(src="assets/Imagenes/CEAA_dorado.png", style={"height": "50px", "margin-right": "10px"}),
+            ],
+            style={"flex": 1, "display": "flex", "align-items": "center", "justifyContent": "space-evenly"}
+        ),
+        html.Div(
+            [
+                impresion_texto_pozo
+            ],
+            style={"display": "flex", "justify-content": "center", "align-items": "center"}
+        ),
+        html.Div(
+             [
+                impresion_texto_municicio,
+                impresion_texto_localidad,
+                impresion_texto_region,
+             ],
+             style={"flex": 1, "display": "flex", "align-items": "center", "justifyContent": "space-evenly"}
+         ),
+                    
+        dbc.ModalBody(
+            [
+                impresion_tabla_pozo,
+            ],
+            style={"display": "flex", "justify-content": "center", "align-items": "center"}
+        ),
+    ],
+    id="impresion_entorno_pozo"
+)
+
+
+
 
 layout = dbc.Container([
     encabezado,
@@ -579,7 +726,11 @@ layout = dbc.Container([
     modal_information,
     modal_question,
     simbologia_imagen,
+    popup_modal_municipal,
+    impresion_entorno_municipal,
     popup_modal_pozo,
+    impresion_entorno_pozo,
+    html.Div(id="dummy-print"),
     dcc.Store(id="current_map", data="municipal", storage_type="session"),  # Almacena el estado actual del mapa
 ],
     fluid=True,

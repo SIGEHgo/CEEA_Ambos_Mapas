@@ -13,6 +13,7 @@ import funciones_auxiliares
 from funciones_auxiliares import generarMapApartirEleccion_Municipal, generarMapApartirEleccion_Regional, obtenerCentroides_Municipales, obtenerCentroides_Regionales, generarMap_dosificadores
 from dash.exceptions import PreventUpdate
 from flask import Flask
+import numpy as np
 
 import dash_ag_grid as dag
 
@@ -29,7 +30,6 @@ anios_nh = [re.sub(r"\.html", "", i) for i in archivos_html]
 anios_nh = [re.sub(r"Mapa_", "", i) for i in anios_nh]
 anios_nh = sorted(anios_nh, key=lambda x: int(x)) # Ordenamos
 anios_nh = {i: anio for i, anio in enumerate(anios_nh)}
-print(anios_nh)
 # anios_nh=0
 # archivos_html = [os.path.join("./assets/Datos/Mapas/", f) for f in archivos_html]
 
@@ -53,7 +53,6 @@ map_dosificadores = funciones_auxiliares.generarMap_dosificadores(arhivo_sph = s
 #print(map_default_municipal)
 
 municipal_geo = funciones_auxiliares.obtenerCentroides_Municipales(shp_municipal)
-print(len(municipal_geo.latitud.unique()))
 regional_geo = funciones_auxiliares.obtenerCentroides_Regionales(shp_regional)
 
 
@@ -284,6 +283,9 @@ def update_map(latitud, current_map):
     return {"center": [latitud, longitud], "zoom": 12}
 
 @app.callback(
+        
+    # Pozo
+
     Output("popup_modal_pozo", "is_open"),
 
     Output("popup_texto_localidad", "children"),
@@ -294,6 +296,41 @@ def update_map(latitud, current_map):
     Output("popup_tabla_pozo", "rowData"),
     Output("popup_tabla_pozo", "columnDefs"),
 
+
+
+    Output("impresion_texto_localidad", "children"),
+    Output("impresion_texto_municipio", "children"),
+    Output("impresion_texto_region", "children"),
+    Output("impresion_texto_pozo", "children"),
+
+    Output("impresion_tabla_pozo", "rowData"),
+    Output("impresion_tabla_pozo", "columnDefs"),
+
+
+    # Municipal
+    Output("popup_modal_municipal", "is_open"),
+
+    Output("popup_texto_municipio_municipal", "children"),
+    Output("popup_texto_numero_pozos_municipal", "children"),
+
+    Output("popup_tabla_cloro_municipal", "rowData"),
+    Output("popup_tabla_cloro_municipal", "columnDefs"),
+
+    Output("popup_tabla_dosificadores_municipal", "rowData"),
+    Output("popup_tabla_dosificadores_municipal", "columnDefs"),
+
+
+
+    Output("impresion_texto_municipio_municipal", "children"),
+    Output("impresion_texto_numero_pozos_municipal", "children"),
+
+    Output("impresion_tabla_cloro_municipal", "rowData"),
+    Output("impresion_tabla_cloro_municipal", "columnDefs"),
+
+    Output("impresion_tabla_dosificadores_municipal", "rowData"),
+    Output("impresion_tabla_dosificadores_municipal", "columnDefs"),
+
+
     Input("geojson", "clickData"),
     Input("close_popup_pozo", "n_clicks"),
     Input("geojson", "n_clicks"),
@@ -303,10 +340,10 @@ def update_map(latitud, current_map):
 def toggle_popup_pozo(feature, close_clicks, n_clicks, is_open, current_map):
 
     trigger_id = ctx.triggered_id
-    print("El trigger id es: ", trigger_id)
 
     if trigger_id == "geojson" and feature and current_map == "pozo":
-        print("Si se esta ejecutando el callback del popup")
+        print("Se disparo geojson y curren map es pozo")
+
         properties = feature["properties"]
         pozo_id = properties.get("ID")
         
@@ -322,17 +359,118 @@ def toggle_popup_pozo(feature, close_clicks, n_clicks, is_open, current_map):
         df_filtro = df_filtro.T.reset_index()
         df_filtro.columns = df_filtro.iloc[0]
         df_filtro = df_filtro.iloc[1:]
-        
-       
 
-        return (True, nom_localidad, f"Municipio: {nom_municipio}", "", f"Fuente de Abastecimiento: {abastecimiento}", df_filtro.to_dict('records'), [{"field": i} for i in df_filtro.columns])
+
+        return (
+            True, f"Localidad: {nom_localidad}", f"Municipio: {nom_municipio}", "", f"Fuente de Abastecimiento: {abastecimiento}", df_filtro.to_dict('records'), [{"field": i} for i in df_filtro.columns],
+            f"Localidad: {nom_localidad}", f"Municipio: {nom_municipio}", "", f"Fuente de Abastecimiento: {abastecimiento}", df_filtro.to_dict('records'), [{"field": i} for i in df_filtro.columns],
+
+            # Municipal
+            False, no_update, no_update, no_update, no_update, no_update, no_update,
+                 no_update, no_update, no_update, no_update, no_update, no_update
+            )
     
-    elif trigger_id == "close_popup_pozo":
-        return (False, no_update, no_update, no_update, no_update, no_update, no_update)
+    if trigger_id == "geojson" and feature and current_map == "municipal":
+        print("Se disparo geojson y curren map es municipal")
+
+        df = shp_municipal.drop(columns=["geometry"], errors='ignore')
+
+        properties = feature["properties"]
+        municipio = properties.get("NOM_MUN")
+        numero_pozos = properties.get("Pozos_Municipio")
+
+        df = df[df["NOM_MUN"] == municipio]
+
+        cloro = df.loc[:, 'CLORO_2020':'CLORO_2024']
+        cloro = cloro.melt(
+            value_vars=cloro.loc[:, "CLORO_2020":"CLORO_2024"].columns,
+            var_name="Año",
+            value_name="Cloro Libre Residual"
+        )
+
+        cloro["Año"] = (
+            cloro["Año"]
+            .str.replace("CLORO_", "", regex=False)
+            .str.strip()
+            .str.replace(r"\s+", " ", regex=True)
+        )
+
+        cloro["Limite"] = np.where(
+            (cloro["Cloro Libre Residual"] >= 0.2) & (cloro["Cloro Libre Residual"] <= 1.5),
+            "Limite permisible",
+            "Fuera del limite permisible"
+        )
+
+        cloro["Cloro Libre Residual"] = cloro["Cloro Libre Residual"].astype(str)
+        cloro["Cloro Libre Residual"] = cloro["Cloro Libre Residual"].replace("-1.0", "No hay dato")
+        cloro.loc[cloro["Cloro Libre Residual"] == "No hay dato", "Limite"] = "No hay dato"
+
+        dosificadores = df.loc[:, 'Dosificadores_localidad':'Dosificadores_gasto_agua']
+        cols = dosificadores.loc[:, "Dosificadores_localidad":"Dosificadores_gasto_agua"].columns
+
+        # Separar filas (equivalente a separate_rows)
+        for col in cols:
+            dosificadores[col] = dosificadores[col].str.split(",")
+
+        dosificadores = dosificadores.explode(cols.tolist())
+
+        # Quitar espacios extra (equivalente a str_squish)
+        for col in cols:
+            dosificadores[col] = (
+                dosificadores[col]
+                .str.strip()                 # quita espacios inicio/fin
+                .str.replace(r"\s+", " ", regex=True)  # reduce múltiples espacios a uno
+            )
+        
+        dosificadores = dosificadores.rename(columns={"Dosificadores_localidad":"Localidad", "Dosificadores_locacion":"Locación", "Dosificadores_anios":"Año", "Dosificadores_marca":"Marca", "Dosificadores_gasto_agua":"Gasto de agua"})
+
+        return (
+            # Pozo
+            False, no_update, no_update, no_update, no_update, no_update, no_update,
+                 no_update, no_update, no_update, no_update, no_update, no_update,
+                 
+                 # Municipal
+                 True, municipio, f"Numero de pozos: {numero_pozos}", cloro.to_dict('records'), [{"field": i} for i in cloro.columns], dosificadores.to_dict('records'), [{"field": i} for i in dosificadores.columns],
+                 municipio, f"Numero de pozos: {numero_pozos}", cloro.to_dict('records'), [{"field": i} for i in cloro.columns], dosificadores.to_dict('records'), [{"field": i} for i in dosificadores.columns]
+                 )
     
-    return (is_open, no_update, no_update, no_update, no_update, no_update, no_update)
+    if trigger_id == "close_popup_pozo":
+        return (False, no_update, no_update, no_update, no_update, no_update, no_update,
+                 no_update, no_update, no_update, no_update, no_update, no_update,
+                 
+                 False, no_update, no_update, no_update, no_update, no_update, no_update,
+                 no_update, no_update, no_update, no_update, no_update, no_update
+                 )
+    
+    return (False, no_update, no_update, no_update, no_update, no_update, no_update,
+             no_update, no_update, no_update, no_update, no_update, no_update,
+
+             False, no_update, no_update, no_update, no_update, no_update, no_update,
+                 no_update, no_update, no_update, no_update, no_update, no_update
+             
+             )
 
    
+app.clientside_callback(
+    """
+    function(){
+        var printContents = document.getElementById('impresion_entorno_pozo').innerHTML;
+        var originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+
+        window.print();
+
+        document.body.innerHTML = originalContents;
+        location.reload()
+
+        return window.dash_clientside.no_update
+    }
+    """,
+    Output("dummy-print", "children"),
+    Input("descargar_pozo", "n_clicks"),
+    prevent_initial_call=True,
+)
 
 
 

@@ -26,7 +26,7 @@ window.dashExtensions = Object.assign({}, window.dashExtensions, {
                 layer.bindTooltip(
                     `
              <p> Municipio: <b>${feature.properties.NOM_MUN}</b> </p>
-             <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"]} </b> </p>
+             <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"] == -1 ? "No hay dato" : feature.properties["Valor-actual"]}</b> </p>
         `
                 );
             }

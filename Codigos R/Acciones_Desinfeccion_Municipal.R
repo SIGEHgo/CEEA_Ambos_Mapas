@@ -63,12 +63,13 @@ dosificadores_conteo = dosificadores |> sf::st_drop_geometry() |>
   dplyr::summarise(
     Dosificadores_municipio = dplyr::n(),
     Dosificadores_localidad = paste(NOM_LOC, collapse = ", "),
-    Dosificadores_nombres = paste(Locacin, collapse = ", "),
+    Dosificadores_locacion = paste(Locacin, collapse = ", "),
     Dosificadores_anios = paste(Año, collapse = ", "),
-    Dosificadores_marca = paste(Marca, Modelo, collapse = ", ", sep = ": ")
+    Dosificadores_marca = paste(Marca, Modelo, collapse = ", ", sep = ": "),
+    Dosificadores_gasto_agua = paste(Gastdag, collapse = ", ")
     ) |>  
   dplyr::ungroup() |> 
-  dplyr::mutate(Dosificadores_nombres = Dosificadores_nombres |>  gsub(pattern = "pozo", replacement = "Pozo") |>  stringr::str_squish())
+  dplyr::mutate(Dosificadores_locacion = Dosificadores_locacion |>  stringr::str_squish())
 
 
 cloro = cloro |> 
@@ -110,9 +111,14 @@ cloro = cloro |>
 cloro = cloro |> 
   dplyr::relocate(Región, `Zona Metropolitana`, .after = NOM_MUN)
 
+cloro = cloro |> 
+  dplyr::mutate(
+    Pozos_Municipio = dplyr::if_else(condition = is.na(Pozos_Municipio), true = 0, false = Pozos_Municipio),
+    Dosificadores_gasto_agua = dplyr::if_else(condition = is.na(Dosificadores_gasto_agua), true = "No hay dosificadores", false = Dosificadores_gasto_agua)
+  )
 
 
-cloro |>  sf::write_sf("../../../../Acciones_de_desinfeccion_municipal.geojson")
+cloro |>  sf::write_sf("app/assets/Acciones_de_desinfeccion_municipal.geojson", delete_dsn = TRUE)
 
 
 prueba = "../../../../Acciones_de_desinfeccion_municipal.geojson" |>  sf::read_sf()

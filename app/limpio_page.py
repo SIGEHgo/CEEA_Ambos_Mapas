@@ -23,6 +23,8 @@ geojson = dl.GeoJSON(
 )
 
 
+
+# Generar entonrnos de descarga y impresion 
 df_base = pd.DataFrame(gpd.read_file("assets/Pozos.geojson").drop(columns="geometry"))
 
 
@@ -66,14 +68,14 @@ entorno_impresion = html.Div(
             [
                 print_fuente
             ],
-            style={"display": "flex", "justify-content": "center", "align-items": "center", "background-color": "#9C2448", "color": "white"}
+            style={"display": "flex", "justify-content": "center", "align-items": "center"}
         ),
         html.Div(
              [
                 print_municipio,
                 print_localidad,
             ],
-            style={"flex": 1, "display": "flex", "align-items": "center", "justifyContent": "space-evenly", "background-color": "#9C2448", "color": "white"}
+            style={"flex": 1, "display": "flex", "align-items": "center", "justifyContent": "space-evenly"}
          ),
                     
         dbc.ModalBody(
