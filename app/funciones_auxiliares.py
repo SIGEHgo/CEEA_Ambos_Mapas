@@ -71,7 +71,7 @@ def obtenerCentroides_Municipales(shp):
 
 def obtenerCentroides_Regionales(shp):
     # Filtrar solo las columnas necesarias
-    regional_geometrias = shp[['Región', 'geometry']].copy()
+    regional_geometrias = shp[['Region', 'geometry']].copy()
 
     # Asegurar que la geometría está en EPSG:3857
     if regional_geometrias.crs != "EPSG:3857":

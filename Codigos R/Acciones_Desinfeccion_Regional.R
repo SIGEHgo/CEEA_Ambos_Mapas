@@ -26,7 +26,7 @@ datos = datos |>
   dplyr::summarise(
     
     dplyr::across(
-      .cols = c(CVE_MUN, NOM_MUN, Dosificadores_localidad:Dosificadores_marca),
+      .cols = c(CVE_MUN, NOM_MUN, Dosificadores_localidad:Dosificadores_gasto_agua),
       .fns = ~ paste(.x, collapse = ", ")
     ),
     
@@ -48,14 +48,14 @@ datos = datos |>
 datos = datos |> 
   dplyr::mutate(
     dplyr::across(
-      .cols = Dosificadores_localidad:Dosificadores_marca,
+      .cols = Dosificadores_localidad:Dosificadores_gasto_agua,
       .fns =  ~ .x |>  gsub(pattern = "No hay dosificadores,", replacement = "") |>  
         gsub(pattern = "No hay dosificadores", replacement = "") |> 
         gsub(pattern = ",\\s*$", replacement = "") |> 
         stringr::str_squish()
     ),
     dplyr::across(
-      .cols = Dosificadores_localidad:Dosificadores_marca,
+      .cols = Dosificadores_localidad:Dosificadores_gasto_agua,
       .fns =  ~ dplyr::if_else(condition = .x == "", true = "No hay dosificadores", false = .x)
     )
   )
@@ -87,5 +87,11 @@ datos = datos |>
 
 
 datos = datos |>  sf::st_as_sf()
+
+datos = datos |> 
+  dplyr::rename(Region=Región)
+
+datos = datos |> 
+  dplyr::mutate()
 
 datos |>  sf::write_sf("app/assets/Acciones_de_desinfeccion_regional.geojson")

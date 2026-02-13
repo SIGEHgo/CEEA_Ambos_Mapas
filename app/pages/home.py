@@ -75,7 +75,7 @@ on_each_feature = assign("""function(feature, layer, context){
     if (modo === "regional") {
         layer.bindTooltip(
          `
-             <p> Región: <b>${feature.properties["Región"]}</b> </p>
+             <p> Región: <b>${feature.properties["Region"]}</b> </p>
              <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"]} </b> </p>
         `
         );
@@ -630,6 +630,97 @@ impresion_entorno_municipal = html.Div(
     style={"display":"none"}
 )
 
+
+### regional
+popup_texto_region_regional= html.P(id="popup_texto_region_regional")
+impresion_texto_region_regional = html.P(id="impresion_texto_region_regional")
+
+popup_texto_numero_pozos_regional = html.P(id="popup_texto_numero_pozos_regional")
+impresion_texto_numero_pozos_regional = html.P(id="impresion_texto_numero_pozos_regional")
+
+popup_tabla_cloro_regional = dag.AgGrid(
+    id="popup_tabla_cloro_regional",
+    rowData=[],
+    columnDefs=[],
+    defaultColDef={"flex": 1, "sortable": True, "filter": True},
+    style={"height": "34vh", "width": "100%"}
+)
+
+impresion_tabla_cloro_regional = dag.AgGrid(
+    id="impresion_tabla_cloro_regional",
+    rowData=[],
+    columnDefs=[],
+    defaultColDef={"flex": 1, "sortable": True, "filter": True},
+    style={"height": "", "width": ""},
+    dashGridOptions={"domLayout": "print"}
+)
+
+popup_tabla_dosificadores_regional = dag.AgGrid(
+    id="popup_tabla_dosificadores_regional",
+    rowData=[],
+    columnDefs=[],
+    defaultColDef={"flex": 1, "sortable": True, "filter": True},
+    style={"height": "30vh", "width": "100%"}
+)
+
+impresion_tabla_dosificadores_regional = dag.AgGrid(
+    id="impresion_tabla_dosificadores_regional",
+    rowData=[],
+    columnDefs=[],
+    defaultColDef={"flex": 1, "sortable": True, "filter": True},
+    style={"height": "", "width": ""},
+    dashGridOptions={"domLayout": "print"}
+)
+
+popup_modal_regional = dbc.Modal(
+    [
+        dbc.ModalHeader(popup_texto_region_regional),
+        dbc.ModalBody(children=[
+            popup_tabla_cloro_regional,
+            html.P(children= "Acerca de la región:"),
+            popup_texto_numero_pozos_regional,
+            popup_tabla_dosificadores_regional
+            ]),
+        dbc.ModalFooter(
+            children=[
+                dbc.Button("Descargar", id="descargar_regional", className="button-custom", n_clicks=0),    
+                dbc.Button("Cerrar", id="close_popup_regional", className="button-custom", n_clicks=0)
+            ]
+        ),
+    ],
+    id="popup_modal_regional",
+    size="xl",
+    is_open=False
+)
+
+impresion_entorno_regional = html.Div(
+    [
+        html.Div(
+            [
+                html.Img(src="assets/Imagenes/Planeacion_dorado.png", style={"height": "50px", "margin-right": "10px"}),
+                html.Img(src="assets/Imagenes/CEAA_dorado.png", style={"height": "50px", "margin-right": "10px"}),
+            ],
+            style={"flex": 1, "display": "flex", "align-items": "center", "justifyContent": "space-evenly"}
+        ),
+        html.Div(
+            [
+                impresion_texto_region_regional
+            ],
+            style={"display": "flex", "justify-content": "center", "align-items": "center"}
+        ),
+        dbc.ModalBody(
+            [
+                impresion_tabla_cloro_regional,
+                impresion_texto_numero_pozos_regional,
+                impresion_tabla_dosificadores_regional,
+            ],
+            style={"flex": 1, "display": "flex", "flex-direction": "column", "justify-content": "center", "align-items": "center"}
+        ),
+    ],
+    id="impresion_entorno_regional",
+    style={"display":"none"}
+)
+
 ### Pozo
 
 popup_texto_localidad = html.P(id="popup_texto_localidad")
@@ -729,6 +820,8 @@ layout = dbc.Container([
     simbologia_imagen,
     popup_modal_municipal,
     impresion_entorno_municipal,
+    popup_modal_regional,
+    impresion_entorno_regional,
     popup_modal_pozo,
     impresion_entorno_pozo,
     html.Div(id="dummy-print"),

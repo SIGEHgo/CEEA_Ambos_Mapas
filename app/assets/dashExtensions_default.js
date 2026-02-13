@@ -34,7 +34,7 @@ window.dashExtensions = Object.assign({}, window.dashExtensions, {
             if (modo === "regional") {
                 layer.bindTooltip(
                     `
-             <p> Región: <b>${feature.properties["Región"]}</b> </p>
+             <p> Región: <b>${feature.properties["Region"]}</b> </p>
              <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"]} </b> </p>
         `
                 );
