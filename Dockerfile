@@ -8,5 +8,5 @@ COPY app/requirements.txt .
 RUN pip3 install -r requirements.txt
 
 COPY app/ ./
-EXPOSE 8081
-CMD [ "gunicorn", "--workers=1", "--threads=2", "-b", "0.0.0.0:8081", "--timeout", "600", "--preload", "app:server"]
+EXPOSE 8052
+CMD [ "gunicorn", "--workers=1", "--threads=2", "-b", "0.0.0.0:8052", "--timeout", "600", "--preload", "app:server"]
