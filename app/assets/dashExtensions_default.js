@@ -34,7 +34,7 @@ window.dashExtensions = Object.assign({}, window.dashExtensions, {
             if (modo === "regional") {
                 layer.bindTooltip(
                     `
-             <p> Región: <b>${feature.properties["Region"]}</b> </p>
+             <p> Region: <b>${feature.properties["Region"]}</b> </p>
              <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"]} </b> </p>
         `
                 );
@@ -49,6 +49,15 @@ window.dashExtensions = Object.assign({}, window.dashExtensions, {
         `
                 );
             }
+        },
+        function2: function(feature, latlng) {
+            const flag = L.icon({
+                iconUrl: `assets/Imagenes/No hay dato_gota.png`,
+                iconSize: [45, 35]
+            });
+            return L.marker(latlng, {
+                icon: flag
+            });
         }
     }
 });

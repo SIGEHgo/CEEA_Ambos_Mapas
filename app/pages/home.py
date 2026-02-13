@@ -75,7 +75,7 @@ on_each_feature = assign("""function(feature, layer, context){
     if (modo === "regional") {
         layer.bindTooltip(
          `
-             <p> Región: <b>${feature.properties["Region"]}</b> </p>
+             <p> Region: <b>${feature.properties["Region"]}</b> </p>
              <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"]} </b> </p>
         `
         );
@@ -91,6 +91,8 @@ on_each_feature = assign("""function(feature, layer, context){
         );
     }
 }""")
+
+
 
 # Clases para la paleta de colores
 classes = [-2, -0.0000000001, 0.199999999999999999, 1.5]
@@ -125,9 +127,17 @@ geojson = dl.GeoJSON(
     id="geojson"
 )
 
+icon_dosificadores = assign("""function(feature, latlng){
+const flag = L.icon({iconUrl: `assets/Imagenes/No hay dato_gota.png`, iconSize: [45, 35]});
+return L.marker(latlng, {icon: flag});
+}""")
+
 geojson_dosificadores = dl.GeoJSON(
-    data=map_dosificadores
+    data=map_dosificadores,
+    pointToLayer=icon_dosificadores
 )
+
+
 ############################################
 ### Definición de Componentes del Layout ###
 ############################################
@@ -576,7 +586,7 @@ impresion_tabla_dosificadores_municipal = dag.AgGrid(
     rowData=[],
     columnDefs=[],
     defaultColDef={"flex": 1, "sortable": True, "filter": True},
-    style={"height": "", "width": ""},
+    style={"height": "", "width": "100%"},
     dashGridOptions={"domLayout": "print"}
 )
 
@@ -668,7 +678,7 @@ impresion_tabla_dosificadores_regional = dag.AgGrid(
     rowData=[],
     columnDefs=[],
     defaultColDef={"flex": 1, "sortable": True, "filter": True},
-    style={"height": "", "width": ""},
+    style={"height": "", "width": "100%"},
     dashGridOptions={"domLayout": "print"}
 )
 

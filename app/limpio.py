@@ -200,6 +200,3 @@ app.clientside_callback(
     prevent_initial_call=True,
 )
 
-
-if __name__ == "__main__":
-    app.run(debug=True)

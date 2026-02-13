@@ -210,6 +210,3 @@ app.clientside_callback(
     Input("download-modal", "n_clicks"),
 )
 
-
-if __name__ == "__main__":
-    app.run(debug=True)

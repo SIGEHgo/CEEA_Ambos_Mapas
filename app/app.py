@@ -487,7 +487,7 @@ def toggle_popup_pozo(
 
         properties = feature["properties"]
         region = properties.get("Region")
-        numero_pozos = properties.get("Pozos_Region")
+        numero_pozos = properties.get("Pozos_Municipio")
 
         df = df[df["Region"] == region]
 
@@ -594,13 +594,12 @@ def toggle_popup_pozo(
 app.clientside_callback(
     """
     function(n_clicks_pozo, n_clicks_municipal, n_clicks_regional, current_map_data) {
-        // current_map_data recibe directamente el valor del State("current_map", "data")
+
         console.log("Mapa actual:", current_map_data);
         
-        // Variable para guardar el ID del contenedor que vamos a imprimir
+
         var div_a_imprimir = "";
 
-        // Evaluamos el valor del mapa actual
         if (current_map_data === "pozo") {
             div_a_imprimir = "impresion_entorno_pozo";
         } else if (current_map_data === "municipal") {
@@ -608,20 +607,13 @@ app.clientside_callback(
         } else if (current_map_data === "regional") {
             div_a_imprimir = "impresion_entorno_regional";
         } else {
-            // Si el estado no es ninguno de los dos, cancelamos la actualización
             console.warn("Estado de mapa desconocido:", current_map_data);
             return window.dash_clientside.no_update;
         }
 
-        // Buscamos el elemento en el DOM
         var elemento = document.getElementById(div_a_imprimir);
         
-        if (!elemento) {
-            console.error("No se encontró el div para imprimir: " + div_a_imprimir);
-            return window.dash_clientside.no_update;
-        }
 
-        // Lógica de impresión
         var printContents = elemento.innerHTML;
         var originalContents = document.body.innerHTML;
 
@@ -643,4 +635,4 @@ app.clientside_callback(
 )
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

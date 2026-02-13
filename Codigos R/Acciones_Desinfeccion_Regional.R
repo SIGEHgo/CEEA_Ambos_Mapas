@@ -92,6 +92,11 @@ datos = datos |>
   dplyr::rename(Region=Región)
 
 datos = datos |> 
-  dplyr::mutate()
+  dplyr::mutate(
+    dplyr::across(
+      .cols = CLORO_2020:CLORO_2024 ,
+      .fns = ~ .x |>  round(digits = 2)
+    )
+  )
 
 datos |>  sf::write_sf("app/assets/Acciones_de_desinfeccion_regional.geojson")
