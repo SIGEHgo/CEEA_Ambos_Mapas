@@ -623,11 +623,11 @@ impresion_entorno_municipal = html.Div(
                 impresion_texto_numero_pozos_municipal,
                 impresion_tabla_dosificadores_municipal,
             ],
-            style={"display": "flex", "justify-content": "center", "align-items": "center"}
+            style={"flex": 1, "display": "flex", "flex-direction": "column", "justify-content": "center", "align-items": "center"}
         ),
     ],
     id="impresion_entorno_municipal",
-    #style={"display":"none"}
+    style={"display":"none"}
 )
 
 ### Pozo
@@ -712,7 +712,8 @@ impresion_entorno_pozo = html.Div(
             style={"display": "flex", "justify-content": "center", "align-items": "center"}
         ),
     ],
-    id="impresion_entorno_pozo"
+    id="impresion_entorno_pozo",
+    style={"display":"none"}
 )
 
 

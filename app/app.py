@@ -333,11 +333,12 @@ def update_map(latitud, current_map):
 
     Input("geojson", "clickData"),
     Input("close_popup_pozo", "n_clicks"),
+    Input("close_popup_municipal", "n_clicks"),
     Input("geojson", "n_clicks"),
     State("popup_modal_pozo", "is_open"),
     State("current_map", "data"),
 )
-def toggle_popup_pozo(feature, close_clicks, n_clicks, is_open, current_map):
+def toggle_popup_pozo(feature, close_clicks, n_clicks, close_municipal_clicks, is_open, current_map):
 
     trigger_id = ctx.triggered_id
 
@@ -453,26 +454,51 @@ def toggle_popup_pozo(feature, close_clicks, n_clicks, is_open, current_map):
    
 app.clientside_callback(
     """
-    function(){
-        var printContents = document.getElementById('impresion_entorno_pozo').innerHTML;
+    function(n_clicks_pozo, n_clicks_municipal, current_map_data) {
+        // current_map_data recibe directamente el valor del State("current_map", "data")
+        console.log("Mapa actual:", current_map_data);
+        
+        // Variable para guardar el ID del contenedor que vamos a imprimir
+        var div_a_imprimir = "";
+
+        // Evaluamos el valor del mapa actual
+        if (current_map_data === "pozo") {
+            div_a_imprimir = "impresion_entorno_pozo";
+        } else if (current_map_data === "municipal") {
+            div_a_imprimir = "impresion_entorno_municipal";
+        } else {
+            // Si el estado no es ninguno de los dos, cancelamos la actualización
+            console.warn("Estado de mapa desconocido:", current_map_data);
+            return window.dash_clientside.no_update;
+        }
+
+        // Buscamos el elemento en el DOM
+        var elemento = document.getElementById(div_a_imprimir);
+        
+        if (!elemento) {
+            console.error("No se encontró el div para imprimir: " + div_a_imprimir);
+            return window.dash_clientside.no_update;
+        }
+
+        // Lógica de impresión
+        var printContents = elemento.innerHTML;
         var originalContents = document.body.innerHTML;
 
         document.body.innerHTML = printContents;
-
         window.print();
 
         document.body.innerHTML = originalContents;
-        location.reload()
+        location.reload();
 
-        return window.dash_clientside.no_update
+        return window.dash_clientside.no_update;
     }
     """,
     Output("dummy-print", "children"),
     Input("descargar_pozo", "n_clicks"),
+    Input("descargar_municipal", "n_clicks"),
+    State("current_map", "data"),
     prevent_initial_call=True,
 )
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)

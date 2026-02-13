@@ -3,8 +3,8 @@ import dash_bootstrap_components as dbc
 import dash_leaflet as dl
 import dash_ag_grid as dag
 
-from dash import html, dcc, Input, Output, State, no_update, ctx
-from dash_extensions.enrich import DashProxy
+from dash import Dash, html, dcc, Input, Output, State, no_update, ctx
+#from dash_extensions.enrich import DashProxy
 from dash_extensions.javascript import assign
 
 import geopandas as gpd
@@ -110,10 +110,7 @@ modal_popup = dbc.Modal(
     size="xl",
 )
 
-app = DashProxy(
-    prevent_initial_callbacks=True,
-    external_stylesheets=[dbc.themes.BOOTSTRAP],
-)
+app = Dash(__name__, prevent_initial_callbacks=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.layout = html.Div(
     [
@@ -202,23 +199,15 @@ def toggle_modal(feature, close_clicks, n_clicks, is_open):
 
 app.clientside_callback(
     """
-    function(){
-        var printContents = document.getElementById('entorno_impresion').innerHTML;
-        var originalContents = document.body.innerHTML;
-
-        document.body.innerHTML = printContents;
-
-        window.print();
-
-        document.body.innerHTML = originalContents;
-        location.reload()
-
-        return window.dash_clientside.no_update
+    function(n_clicks){
+        if(n_clicks > 0){
+            window.print();
+        }
+        return window.dash_clientside.no_update;
     }
     """,
     Output("dummy-print", "children"),
     Input("download-modal", "n_clicks"),
-    prevent_initial_call=True,
 )
 
 
