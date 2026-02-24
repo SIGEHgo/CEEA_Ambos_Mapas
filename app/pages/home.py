@@ -389,7 +389,7 @@ modal_information = dbc.Modal(children=[
     dbc.ModalBody([
         "La Norma Oficial Mexicana ",
         html.A("NOM-127-SSA1-2021", href="https://www.dof.gob.mx/nota_detalle_popup.php?codigo=5650705", target="_blank"),
-        " establece que el agua de uso y consumo humano debe presentar una concentración de cloro residual libre entre 0.2 y 1.5mg/L."
+        " establece los límites permitidos de calidad del agua para uso y consumo humano."
     ]),
     dbc.ModalFooter(
         dbc.Button("De Acuerdo", id="close_information", className="ms-auto", n_clicks=0)
@@ -412,7 +412,7 @@ modal_content = [
                 html.Li([
                     html.Strong("Capas de Información:"),
                     html.Ul([
-                        html.Li("Permite elegir el tipo de mapa a visualizar (municipal o regional)."),
+                        html.Li("Permite elegir el tipo de mapa a visualizar (municipal, regional o pozo)."),
                         html.Li("Incluye una línea de tiempo para seleccionar el año deseado."),
                         html.Li('Tiene un botón "Histórico" que cambia el mapa automáticamente cada 2.5 segundos para mostrar diferentes periodos.')
                     ])
