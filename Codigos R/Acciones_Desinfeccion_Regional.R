@@ -5,12 +5,12 @@ orden = names(datos)
 datos = datos |> 
   dplyr::mutate(
     dplyr::across(
-      .cols = CLORO_2020:CLORO_2024,
+      .cols = CLORO_2020:CLORO_2025,
       .fns = ~ dplyr::if_else(condition = .x == "-1", true = NA, false = .x)
     ),
     CVE_MUN = paste0("13", CVE_MUN) |>  stringr::str_squish(),
     dplyr::across(
-      .cols = CLORO_2020:CLORO_2024,
+      .cols = CLORO_2020:CLORO_2025,
       .fns = ~ .x |>  as.numeric()
     )
   )
@@ -31,7 +31,7 @@ datos = datos |>
     ),
     
     dplyr::across(
-      .cols = CLORO_2020:CLORO_2024,
+      .cols = CLORO_2020:CLORO_2025,
       .fns = ~ mean(.x, na.rm = T)
     ),
     
@@ -70,7 +70,7 @@ datos = datos |>
 datos = datos |> 
   dplyr::mutate(
     dplyr::across(
-      .cols = CLORO_2020:CLORO_2024,
+      .cols = CLORO_2020:CLORO_2025,
       .fns = ~ dplyr::if_else(condition = is.na(.x), true = -1, false = .x)
       )
   )
@@ -94,9 +94,9 @@ datos = datos |>
 datos = datos |> 
   dplyr::mutate(
     dplyr::across(
-      .cols = CLORO_2020:CLORO_2024 ,
+      .cols = CLORO_2020:CLORO_2025,
       .fns = ~ .x |>  round(digits = 2)
     )
   )
 
-datos |>  sf::write_sf("app/assets/Acciones_de_desinfeccion_regional.geojson")
+datos |>  sf::write_sf("app/assets/Acciones_de_desinfeccion_regional.geojson", delete_dsn = TRUE)

@@ -38,7 +38,7 @@ anios_nh = {i: anio for i, anio in enumerate(anios_nh)}
 #Carga de datos y definición de variables
 shp_municipal = gpd.read_file("./assets/Acciones_de_desinfeccion_municipal.geojson")
 shp_regional = gpd.read_file("./assets/Acciones_de_desinfeccion_regional.geojson")
-shp_dosificadores = gpd.read_file("./assets/Datos/shp/Dosidicadores.shp")
+shp_dosificadores = gpd.read_file("./assets/Dosificadores.shp")
 geojson_pozo = gpd.read_file("./assets/Pozos.geojson")
 
 columns_list = shp_municipal.columns.tolist()
@@ -423,9 +423,9 @@ def toggle_popup_pozo(
 
         df = df[df["NOM_MUN"] == municipio]
 
-        cloro = df.loc[:, 'CLORO_2020':'CLORO_2024']
+        cloro = df.loc[:, 'CLORO_2020':'CLORO_2025']
         cloro = cloro.melt(
-            value_vars=cloro.loc[:, "CLORO_2020":"CLORO_2024"].columns,
+            value_vars=cloro.loc[:, "CLORO_2020":"CLORO_2025"].columns,
             var_name="Año",
             value_name="Cloro Libre Residual"
         )
@@ -491,9 +491,9 @@ def toggle_popup_pozo(
 
         df = df[df["Region"] == region]
 
-        cloro = df.loc[:, 'CLORO_2020':'CLORO_2024']
+        cloro = df.loc[:, 'CLORO_2020':'CLORO_2025']
         cloro = cloro.melt(
-            value_vars=cloro.loc[:, "CLORO_2020":"CLORO_2024"].columns,
+            value_vars=cloro.loc[:, "CLORO_2020":"CLORO_2025"].columns,
             var_name="Año",
             value_name="Cloro Libre Residual"
         )

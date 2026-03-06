@@ -43,7 +43,29 @@ pozos_conteo = pozos |>
 
 
 cloro = "app/assets/Datos/shp/Historicos_Acciones.shp" |>  sf::read_sf()
-dosificadores = "app/assets/Datos/shp/Dosidicadores.shp" |>  sf::read_sf()
+
+cloro_unir = "Input/2026/Registro y consulta Monitoreo de Cloro 2025.xlsx" |>  readxl::read_excel()
+
+cloro_unir = cloro_unir |> 
+  dplyr::select(`Tabla para concentración de datos y consulta de reportes Monitoreo de cloro 2025`, ...4) |> 
+  dplyr::filter(!(`Tabla para concentración de datos y consulta de reportes Monitoreo de cloro 2025` |>  is.na()))
+
+cloro_unir = cloro_unir |> 
+  dplyr::slice(-c(1, 86)) |> 
+  dplyr::mutate(
+    ...4 = ...4 |>  stringr::str_squish() |>  as.numeric()
+  )
+
+cloro_unir = cloro_unir |> 
+  dplyr::rename(`CLORO_2025` = ...4) |> 
+  dplyr::rename(Municipio = `Tabla para concentración de datos y consulta de reportes Monitoreo de cloro 2025`)
+
+cloro = cloro |> 
+  dplyr::left_join(y = cloro_unir, by = c("NOM_MUN" = "Municipio")) |> 
+  dplyr::relocate(CLORO_2025, .after = CLORO_2024)
+
+
+dosificadores = "app/assets/Dosificadores.shp" |>  sf::read_sf()
 
 loc = "../../Importantes_documentos_usar/Localidades/shp1/13l.shp" |>  
   sf::read_sf() |>  
@@ -117,6 +139,11 @@ cloro = cloro |>
     Dosificadores_gasto_agua = dplyr::if_else(condition = is.na(Dosificadores_gasto_agua), true = "No hay dosificadores", false = Dosificadores_gasto_agua)
   )
 
+
+cloro = cloro |> 
+  dplyr::mutate(
+    CLORO_2025 = dplyr::if_else(condition = is.na(CLORO_2025), true = -1, false = CLORO_2025)
+  )
 
 cloro |>  sf::write_sf("app/assets/Acciones_de_desinfeccion_municipal.geojson", delete_dsn = TRUE)
 
