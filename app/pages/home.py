@@ -23,6 +23,8 @@ from app import map_default_regional
 from app import map_dosificadores
 from app import anios
 from app import municipal_geo
+from app import potabilizadoras
+from app import purificadoras
 
 import dash_ag_grid as dag
 
@@ -76,7 +78,7 @@ on_each_feature = assign("""function(feature, layer, context){
         layer.bindTooltip(
          `
              <p> Region: <b>${feature.properties["Region"]}</b> </p>
-             <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"]} </b> </p>
+             <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"] == -1 ? "No hay dato" : feature.properties["Valor-actual"]}</b> </p>
         `
         );
     }
@@ -92,6 +94,36 @@ on_each_feature = assign("""function(feature, layer, context){
     }
 }""")
 
+
+
+on_each_feature_purificadoras = assign("""
+    function(feature, layer){
+        if (feature.properties){
+            layer.bindTooltip(
+            `
+                <p> Municipio: <b> ${feature.properties.MUNICIPIO} </b> </p>
+                <p> Localidad: <b> ${feature.properties.LOCALIDAD} </b> </p>
+                <p> Fecha: <b> ${feature.properties.FECHA} </b> </p> 
+            `
+            );
+        }
+    }
+""")
+
+
+on_each_feature_potabilizadoras = assign("""
+    function(feature, layer){
+        if (feature.properties){
+            layer.bindTooltip(
+            `
+                <p> Municipio: <b> ${feature.properties.Municipio} </b> </p>
+                <p> Localidad: <b> ${feature.properties.Localidad} </b> </p>
+                <p> Fecha: <b> ${feature.properties.Fecha} </b> </p> 
+            `
+            );
+        }
+    }
+""")
 
 
 # Clases para la paleta de colores
@@ -137,6 +169,17 @@ geojson_dosificadores = dl.GeoJSON(
     pointToLayer=icon_dosificadores
 )
 
+geojson_purificadoras = dl.GeoJSON(
+    data=purificadoras,
+    pointToLayer=icon_dosificadores,
+    onEachFeature = on_each_feature_purificadoras
+)
+
+geojson_potabilizadores = dl.GeoJSON(
+    data=potabilizadoras,
+    pointToLayer=icon_dosificadores,
+    onEachFeature = on_each_feature_potabilizadoras
+)
 
 ############################################
 ### Definición de Componentes del Layout ###
@@ -502,6 +545,8 @@ mapa = dbc.Row(
                         children=[
                             dl.BaseLayer(children=[geojson], name="Cloro Residual Libre", checked=True),
                             dl.Overlay(children=[geojson_dosificadores], name="Dosificadores de Cloro", checked=False),
+                            dl.Overlay(children=[geojson_purificadoras], name="Purificadoras", checked=False),
+                            dl.Overlay(children=[geojson_potabilizadores], name="Potabilizadores", checked=False)
                         ],
                         position="topright",
                         id="layers_control",

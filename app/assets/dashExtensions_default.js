@@ -35,7 +35,7 @@ window.dashExtensions = Object.assign({}, window.dashExtensions, {
                 layer.bindTooltip(
                     `
              <p> Region: <b>${feature.properties["Region"]}</b> </p>
-             <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"]} </b> </p>
+             <p> Cloro Residual Libre :<b> ${feature.properties["Valor-actual"] == -1 ? "No hay dato" : feature.properties["Valor-actual"]}</b> </p>
         `
                 );
             }
@@ -50,7 +50,33 @@ window.dashExtensions = Object.assign({}, window.dashExtensions, {
                 );
             }
         },
-        function2: function(feature, latlng) {
+        function2: function(feature, layer) {
+                if (feature.properties) {
+                    layer.bindTooltip(
+                        `
+                <p> Municipio: <b> ${feature.properties.MUNICIPIO} </b> </p>
+                <p> Localidad: <b> ${feature.properties.LOCALIDAD} </b> </p>
+                <p> Fecha: <b> ${feature.properties.FECHA} </b> </p> 
+            `
+                    );
+                }
+            }
+
+            ,
+        function3: function(feature, layer) {
+                if (feature.properties) {
+                    layer.bindTooltip(
+                        `
+                <p> Municipio: <b> ${feature.properties.Municipio} </b> </p>
+                <p> Localidad: <b> ${feature.properties.Localidad} </b> </p>
+                <p> Fecha: <b> ${feature.properties.Fecha} </b> </p> 
+            `
+                    );
+                }
+            }
+
+            ,
+        function4: function(feature, latlng) {
             const flag = L.icon({
                 iconUrl: `assets/Imagenes/No hay dato_gota.png`,
                 iconSize: [45, 35]

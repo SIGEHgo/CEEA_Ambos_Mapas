@@ -99,4 +99,4 @@ datos = datos |>
     )
   )
 
-datos |>  sf::write_sf("app/assets/Acciones_de_desinfeccion_regional.geojson", delete_dsn = TRUE)
+datos |>  sf::write_sf("app/assets/Acciones_de_desinfeccion_regional.geojson", delete_dsn = T)

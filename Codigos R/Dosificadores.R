@@ -42,7 +42,58 @@ dosificadores = dosificadores |>
 dosificadores |>  names() = c("Municip", "Locacin", "Año", "estado", "Gastdag", "Marca", "Modelo", "geometry")
 dosificadores |> names() = dosificadores |>  names() |>  stringr::str_squish()
 
-dosificadores |>  sf::write_sf("app/assets/Dosificadores.shp")
+
+
+
+
+mun = "../../Importantes_documentos_usar/Municipios/municipiosjair.shp" |>  
+  sf::read_sf() |>  
+  sf::st_drop_geometry() |> 
+  dplyr::select(NOM_MUN)
+
+
+comparar = fuzzyjoin::stringdist_join(
+  x = dosificadores |>  dplyr::select(Municip),
+  y = mun,
+  by = c("Municip" = "NOM_MUN"),
+  ignore_case = F,
+  method = "jw",
+  max_dist = 0.5,
+  distance_col = "dist"
+) |> 
+  dplyr::group_by(Municip)  |> 
+  dplyr::slice_min(order_by = dist, n = 1) |> 
+  dplyr::filter(dist > 0) |>  
+  dplyr::arrange(dist)
+
+
+for (i in 1:nrow(comparar)) {
+  cat(
+    'Municip == "',
+    comparar$Municip[i],
+    '" ~ "',
+    comparar$NOM_MUN[i],
+    '", \n',
+    sep = ""
+  )
+}
+
+
+dosificadores = dosificadores |> 
+  dplyr::mutate(
+    Municip = dplyr::case_when(
+      Municip == "San Felipe Orizatlan" ~ "San Felipe Orizatlán", 
+      Municip == "Tepetitlan" ~ "Tepetitlán", 
+      Municip == "Tepetitlan" ~ "Tepetitlán", 
+      Municip == "San Agustin Metzquititlan" ~ "San Agustín Metzquititlán", 
+      Municip == "Tepeji del Rio" ~ "Tepeji del Río de Ocampo",
+      T ~ Municip 
+    )
+  )
+
+
+
+dosificadores |>  sf::write_sf("app/assets/Dosificadores.shp", delete_layer = T)
 
 library(leaflet)
 

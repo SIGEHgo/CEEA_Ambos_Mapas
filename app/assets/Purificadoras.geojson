@@ -1,0 +1,18 @@
+{
+"type": "FeatureCollection",
+"name": "Purificadoras",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "MUNICIPIO": "Zacualtipán de Ángeles", "LOCALIDAD": "Tizapan", "FECHA": "18/11/2025" }, "geometry": { "type": "Point", "coordinates": [ -98.597218787206273, 20.651461628416058 ] } },
+{ "type": "Feature", "properties": { "MUNICIPIO": "Tizayuca", "LOCALIDAD": "Cecyteh Tizayuca", "FECHA": "19/11/2025" }, "geometry": { "type": "Point", "coordinates": [ -98.978825552692086, 19.823225104423447 ] } },
+{ "type": "Feature", "properties": { "MUNICIPIO": "Ixmiquilpan", "LOCALIDAD": "Cecyteh Capula, Mirador", "FECHA": "14/11/2025" }, "geometry": { "type": "Point", "coordinates": [ -99.161310887952112, 20.498449005862177 ] } },
+{ "type": "Feature", "properties": { "MUNICIPIO": "Ixmiquilpan", "LOCALIDAD": "Cecyteh Cabecera Municipal", "FECHA": "14/11/2025" }, "geometry": { "type": "Point", "coordinates": [ -99.233207125519783, 20.465396915536473 ] } },
+{ "type": "Feature", "properties": { "MUNICIPIO": "Xochiatipan", "LOCALIDAD": "Hueyajtetl", "FECHA": "29/10/2025" }, "geometry": { "type": "Point", "coordinates": [ -98.242862315815557, 20.808010559584641 ] } },
+{ "type": "Feature", "properties": { "MUNICIPIO": "Ajacuba", "LOCALIDAD": "Cabecera Municipal", "FECHA": "06/11/2025" }, "geometry": { "type": "Point", "coordinates": [ -99.18856827454556, 21.008375054781592 ] } },
+{ "type": "Feature", "properties": { "MUNICIPIO": "Juárez Hidalgo", "LOCALIDAD": "Santa Maria", "FECHA": "05/11/2025" }, "geometry": { "type": "Point", "coordinates": [ -98.875804803483504, 20.849748378931764 ] } },
+{ "type": "Feature", "properties": { "MUNICIPIO": "Xochiatipan", "LOCALIDAD": "Acomul", "FECHA": "29/10/2025" }, "geometry": { "type": "Point", "coordinates": [ -98.306796116801422, 20.810438323912884 ] } },
+{ "type": "Feature", "properties": { "MUNICIPIO": "Nicolás Flores", "LOCALIDAD": "Taxhay", "FECHA": "28/10/2025" }, "geometry": { "type": "Point", "coordinates": [ -99.220643939811538, 20.758354309367874 ] } },
+{ "type": "Feature", "properties": { "MUNICIPIO": "Yahualica", "LOCALIDAD": "Atlalco", "FECHA": "20/10/2025" }, "geometry": { "type": "Point", "coordinates": [ -98.329011914511284, 20.915574290753032 ] } },
+{ "type": "Feature", "properties": { "MUNICIPIO": "Yahualica", "LOCALIDAD": "Aguacatitla", "FECHA": "20/10/2025" }, "geometry": { "type": "Point", "coordinates": [ -98.429081289396407, 20.861539380942517 ] } }
+]
+}

@@ -39,6 +39,8 @@ anios_nh = {i: anio for i, anio in enumerate(anios_nh)}
 shp_municipal = gpd.read_file("./assets/Acciones_de_desinfeccion_municipal.geojson")
 shp_regional = gpd.read_file("./assets/Acciones_de_desinfeccion_regional.geojson")
 shp_dosificadores = gpd.read_file("./assets/Dosificadores.shp")
+potabilizadoras = gpd.read_file("./assets/Potabilizadoras.geojson").__geo_interface__
+purificadoras = gpd.read_file("./assets/Purificadoras.geojson").__geo_interface__
 geojson_pozo = gpd.read_file("./assets/Pozos.geojson")
 
 columns_list = shp_municipal.columns.tolist()
@@ -49,8 +51,6 @@ map_default_municipal = funciones_auxiliares.generarMapApartirEleccion_Municipal
 map_default_regional = funciones_auxiliares.generarMapApartirEleccion_Regional(geojson=shp_regional, lista_eleccion=opciones_cloro[0])
 map_default_pozo = funciones_auxiliares.generarMapApartirEleccion_Pozo(geojson=geojson_pozo, lista_eleccion= anios_nh[11])
 map_dosificadores = funciones_auxiliares.generarMap_dosificadores(arhivo_sph = shp_dosificadores)
-
-#print(map_default_municipal)
 
 municipal_geo = funciones_auxiliares.obtenerCentroides_Municipales(shp_municipal)
 regional_geo = funciones_auxiliares.obtenerCentroides_Regionales(shp_regional)
@@ -512,6 +512,8 @@ def toggle_popup_pozo(
         )
 
         cloro["Cloro Libre Residual"] = cloro["Cloro Libre Residual"].astype(str)
+        cloro["Cloro Libre Residual"] = cloro["Cloro Libre Residual"].replace("-1.0", "No hay dato")
+        cloro.loc[cloro["Cloro Libre Residual"] == "No hay dato", "Limite"] = "No hay dato"
 
         dosificadores = df.loc[:, 'Dosificadores_localidad':'Dosificadores_gasto_agua']
         cols = dosificadores.loc[:, "Dosificadores_localidad":"Dosificadores_gasto_agua"].columns
