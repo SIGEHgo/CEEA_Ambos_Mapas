@@ -59,6 +59,13 @@ window.dashExtensions = Object.assign({}, window.dashExtensions, {
                 <p> Fecha: <b> ${feature.properties.FECHA} </b> </p> 
             `
                     );
+                    layer.bindPopup(
+                        `
+                <p> Municipio: <b> ${feature.properties.MUNICIPIO} </b> </p>
+                <p> Localidad: <b> ${feature.properties.LOCALIDAD} </b> </p>
+                <p> Fecha: <b> ${feature.properties.FECHA} </b> </p> 
+            `
+                    );
                 }
             }
 
@@ -66,6 +73,14 @@ window.dashExtensions = Object.assign({}, window.dashExtensions, {
         function3: function(feature, layer) {
                 if (feature.properties) {
                     layer.bindTooltip(
+                        `
+                <p> Municipio: <b> ${feature.properties.Municipio} </b> </p>
+                <p> Localidad: <b> ${feature.properties.Localidad} </b> </p>
+                <p> Fecha: <b> ${feature.properties.Fecha} </b> </p> 
+            `
+                    );
+
+                    layer.bindPopup(
                         `
                 <p> Municipio: <b> ${feature.properties.Municipio} </b> </p>
                 <p> Localidad: <b> ${feature.properties.Localidad} </b> </p>

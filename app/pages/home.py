@@ -96,6 +96,7 @@ on_each_feature = assign("""function(feature, layer, context){
 
 
 
+
 on_each_feature_purificadoras = assign("""
     function(feature, layer){
         if (feature.properties){
@@ -106,15 +107,29 @@ on_each_feature_purificadoras = assign("""
                 <p> Fecha: <b> ${feature.properties.FECHA} </b> </p> 
             `
             );
+            layer.bindPopup(
+            `
+                <p> Municipio: <b> ${feature.properties.MUNICIPIO} </b> </p>
+                <p> Localidad: <b> ${feature.properties.LOCALIDAD} </b> </p>
+                <p> Fecha: <b> ${feature.properties.FECHA} </b> </p> 
+            `
+            );
         }
     }
 """)
-
 
 on_each_feature_potabilizadoras = assign("""
     function(feature, layer){
         if (feature.properties){
             layer.bindTooltip(
+            `
+                <p> Municipio: <b> ${feature.properties.Municipio} </b> </p>
+                <p> Localidad: <b> ${feature.properties.Localidad} </b> </p>
+                <p> Fecha: <b> ${feature.properties.Fecha} </b> </p> 
+            `
+            );
+                                         
+            layer.bindPopup(
             `
                 <p> Municipio: <b> ${feature.properties.Municipio} </b> </p>
                 <p> Localidad: <b> ${feature.properties.Localidad} </b> </p>
