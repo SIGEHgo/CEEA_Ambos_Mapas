@@ -23,10 +23,10 @@ import dash_ag_grid as dag
 
 
 ##Cargamos variables de la segunda pagina:
-archivos = os.listdir("./assets/Datos/Mapas/") 
-archivos_html = [f for f in archivos if f.endswith(".html")]
+archivos = os.listdir("./assets/Datos/") 
+archivos_html = [f for f in archivos if f.endswith(".txt")]
 
-anios_nh = [re.sub(r"\.html", "", i) for i in archivos_html]
+anios_nh = [re.sub(r"\.txt", "", i) for i in archivos_html]
 anios_nh = [re.sub(r"Mapa_", "", i) for i in anios_nh]
 anios_nh = sorted(anios_nh, key=lambda x: int(x)) # Ordenamos
 anios_nh = {i: anio for i, anio in enumerate(anios_nh)}
