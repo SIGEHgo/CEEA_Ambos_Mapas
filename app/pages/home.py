@@ -160,9 +160,26 @@ geojson = dl.GeoJSON(
 )
 
 icon_dosificadores = assign("""function(feature, latlng){
-const flag = L.icon({iconUrl: `assets/Imagenes/No hay dato_gota.png`, iconSize: [45, 35]});
+const flag = L.icon(
+    {iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png`, shadowUrl: `https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png`, iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]}
+    );
 return L.marker(latlng, {icon: flag});
 }""")
+
+icon_purificadoras = assign("""function(feature, latlng){
+const flag = L.icon(
+    {iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png`, shadowUrl: `https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png`, iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]}
+    );
+return L.marker(latlng, {icon: flag});
+}""")
+
+icon_potabilizadores = assign("""function(feature, latlng){
+const flag = L.icon(
+    {iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png`, shadowUrl: `https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png`, iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]}
+    );
+return L.marker(latlng, {icon: flag});
+}""")
+
 
 geojson_dosificadores = dl.GeoJSON(
     data=map_dosificadores,
@@ -171,13 +188,13 @@ geojson_dosificadores = dl.GeoJSON(
 
 geojson_purificadoras = dl.GeoJSON(
     data=purificadoras,
-    pointToLayer=icon_dosificadores,
+    pointToLayer=icon_purificadoras,
     onEachFeature = on_each_feature_purificadoras
 )
 
 geojson_potabilizadores = dl.GeoJSON(
     data=potabilizadoras,
-    pointToLayer=icon_dosificadores,
+    pointToLayer=icon_potabilizadores,
     onEachFeature = on_each_feature_potabilizadoras
 )
 
