@@ -282,78 +282,40 @@ def update_map(latitud, current_map):
     # Actualiza el viewport del mapa con la nueva ubicación
     return {"center": [latitud, longitud], "zoom": 12}
 
+
+
+
+
 @app.callback(
-        
     # Pozo
-
     Output("popup_modal_pozo", "is_open"),
-
     Output("popup_texto_localidad", "children"),
     Output("popup_texto_municipio", "children"),
     Output("popup_texto_region", "children"),
     Output("popup_texto_pozo", "children"),
-
     Output("popup_tabla_pozo", "rowData"),
     Output("popup_tabla_pozo", "columnDefs"),
 
-
-
-    Output("impresion_texto_localidad", "children"),
-    Output("impresion_texto_municipio", "children"),
-    Output("impresion_texto_region", "children"),
-    Output("impresion_texto_pozo", "children"),
-
-    Output("impresion_tabla_pozo", "rowData"),
-    Output("impresion_tabla_pozo", "columnDefs"),
-
-
     # Municipal
     Output("popup_modal_municipal", "is_open"),
-
     Output("popup_texto_municipio_municipal", "children"),
     Output("popup_texto_numero_pozos_municipal", "children"),
-
     Output("popup_tabla_cloro_municipal", "rowData"),
     Output("popup_tabla_cloro_municipal", "columnDefs"),
-
     Output("popup_tabla_dosificadores_municipal", "rowData"),
     Output("popup_tabla_dosificadores_municipal", "columnDefs"),
 
-
-
-    Output("impresion_texto_municipio_municipal", "children"),
-    Output("impresion_texto_numero_pozos_municipal", "children"),
-
-    Output("impresion_tabla_cloro_municipal", "rowData"),
-    Output("impresion_tabla_cloro_municipal", "columnDefs"),
-
-    Output("impresion_tabla_dosificadores_municipal", "rowData"),
-    Output("impresion_tabla_dosificadores_municipal", "columnDefs"),
-
-
     # Regional
     Output("popup_modal_regional", "is_open"),
-
     Output("popup_texto_region_regional", "children"),
     Output("popup_texto_numero_pozos_regional", "children"),
-
     Output("popup_tabla_cloro_regional", "rowData"),
     Output("popup_tabla_cloro_regional", "columnDefs"),
-
     Output("popup_tabla_dosificadores_regional", "rowData"),
     Output("popup_tabla_dosificadores_regional", "columnDefs"),
 
-
-
-    Output("impresion_texto_region_regional", "children"),
-    Output("impresion_texto_numero_pozos_regional", "children"),
-
-    Output("impresion_tabla_cloro_regional", "rowData"),
-    Output("impresion_tabla_cloro_regional", "columnDefs"),
-
-    Output("impresion_tabla_dosificadores_regional", "rowData"),
-    Output("impresion_tabla_dosificadores_regional", "columnDefs"),
-
+    # Datos para el PDF (jsPDF) — un solo Store compartido
+    Output("datos_descarga", "data"),
 
     Input("geojson", "clickData"),
     Input("close_popup_pozo", "n_clicks"),
@@ -374,256 +336,250 @@ def toggle_popup_pozo(
     is_open,
     is_open_municipal,
     is_open_regional,
-    current_map
+    current_map,
 ):
-
     trigger_id = ctx.triggered_id
 
+    # ------------------------------------------------------------
+    # Caso: POZO
+    # ------------------------------------------------------------
     if trigger_id == "geojson" and feature and current_map == "pozo":
-        print("Se disparo geojson y curren map es pozo")
 
         properties = feature["properties"]
         pozo_id = properties.get("ID")
-        
+
         abastecimiento = properties.get("Fuente de abastecimiento", "N/A")
         nom_municipio = properties.get("NOM_MUN", "N/A")
         nom_localidad = properties.get("NOM_LOC", "N/A")
 
-        
-        df_filtro = geojson_pozo[geojson_pozo["ID"] == pozo_id].drop(columns=["geometry"], errors='ignore')
+        df_filtro = geojson_pozo[geojson_pozo["ID"] == pozo_id].drop(columns=["geometry"], errors="ignore")
         columnas_eliminar = ["CVEGEO_LOC", "ID", "NOM_MUN", "NOM_LOC", "Fuente de abastecimiento"]
-        df_filtro = df_filtro.drop(columns=columnas_eliminar, errors='ignore')
+        df_filtro = df_filtro.drop(columns=columnas_eliminar, errors="ignore")
 
         df_filtro = df_filtro.T.reset_index()
         df_filtro.columns = df_filtro.iloc[0]
         df_filtro = df_filtro.iloc[1:]
 
+        payload = {
+            "nombreArchivo": f"Reporte_Pozo_{nom_localidad}".replace(" ", "_"),
+            "titulo": f"Fuente de Abastecimiento: {abastecimiento}",
+            "subtitulos": [
+                f"Municipio: {nom_municipio}",
+                f"Localidad: {nom_localidad}",
+            ],
+            "tablas": [
+                {
+                    "titulo": "Detalle del pozo",
+                    "columnas": [str(c) for c in df_filtro.columns],
+                    "filas": df_filtro.astype(str).values.tolist(),
+                }
+            ],
+        }
 
         return (
-            True, f"Localidad: {nom_localidad}", f"Municipio: {nom_municipio}", "", f"Fuente de Abastecimiento: {abastecimiento}", df_filtro.to_dict('records'), [{"field": i} for i in df_filtro.columns],
-            f"Localidad: {nom_localidad}", f"Municipio: {nom_municipio}", "", f"Fuente de Abastecimiento: {abastecimiento}", df_filtro.to_dict('records'), [{"field": i} for i in df_filtro.columns],
+            # Pozo
+            True, f"Localidad: {nom_localidad}", f"Municipio: {nom_municipio}", "",
+            f"Fuente de Abastecimiento: {abastecimiento}",
+            df_filtro.to_dict("records"), [{"field": i} for i in df_filtro.columns],
 
-            # Municipal
+            # Municipal (sin cambios)
             False, no_update, no_update, no_update, no_update, no_update, no_update,
-                 no_update, no_update, no_update, no_update, no_update, no_update,
 
-            # Regional
+            # Regional (sin cambios)
             False, no_update, no_update, no_update, no_update, no_update, no_update,
-                    no_update, no_update, no_update, no_update, no_update, no_update
-            )
-    
+
+            # PDF
+            payload,
+        )
+
+    # ------------------------------------------------------------
+    # Caso: MUNICIPAL
+    # ------------------------------------------------------------
     if trigger_id == "geojson" and feature and current_map == "municipal":
-        print("Se disparo geojson y curren map es municipal")
 
-        df = shp_municipal.drop(columns=["geometry"], errors='ignore')
-
+        df = shp_municipal.drop(columns=["geometry"], errors="ignore")
         properties = feature["properties"]
         municipio = properties.get("NOM_MUN")
         numero_pozos = properties.get("Pozos_Municipio")
 
         df = df[df["NOM_MUN"] == municipio]
 
-        cloro = df.loc[:, 'CLORO_2020':'CLORO_2025']
+        cloro = df.loc[:, "CLORO_2020":"CLORO_2025"]
         cloro = cloro.melt(
             value_vars=cloro.loc[:, "CLORO_2020":"CLORO_2025"].columns,
             var_name="Año",
-            value_name="Cloro Libre Residual"
+            value_name="Cloro Libre Residual",
         )
-
         cloro["Año"] = (
-            cloro["Año"]
-            .str.replace("CLORO_", "", regex=False)
-            .str.strip()
-            .str.replace(r"\s+", " ", regex=True)
+            cloro["Año"].str.replace("CLORO_", "", regex=False)
+            .str.strip().str.replace(r"\s+", " ", regex=True)
         )
-
         cloro["Limite"] = np.where(
             (cloro["Cloro Libre Residual"] >= 0.2) & (cloro["Cloro Libre Residual"] <= 1.5),
-            "Limite permisible",
-            "Fuera del limite permisible"
+            "Limite permisible", "Fuera del limite permisible",
         )
-
         cloro["Cloro Libre Residual"] = cloro["Cloro Libre Residual"].astype(str)
         cloro["Cloro Libre Residual"] = cloro["Cloro Libre Residual"].replace("-1.0", "No hay dato")
         cloro.loc[cloro["Cloro Libre Residual"] == "No hay dato", "Limite"] = "No hay dato"
 
-        dosificadores = df.loc[:, 'Dosificadores_localidad':'Dosificadores_gasto_agua']
+        dosificadores = df.loc[:, "Dosificadores_localidad":"Dosificadores_gasto_agua"]
         cols = dosificadores.loc[:, "Dosificadores_localidad":"Dosificadores_gasto_agua"].columns
-
-        # Separar filas (equivalente a separate_rows)
         for col in cols:
             dosificadores[col] = dosificadores[col].str.split(",")
-
         dosificadores = dosificadores.explode(cols.tolist())
-
-        # Quitar espacios extra (equivalente a str_squish)
         for col in cols:
-            dosificadores[col] = (
-                dosificadores[col]
-                .str.strip()                 # quita espacios inicio/fin
-                .str.replace(r"\s+", " ", regex=True)  # reduce múltiples espacios a uno
-            )
-        
-        dosificadores = dosificadores.rename(columns={"Dosificadores_localidad":"Localidad", "Dosificadores_locacion":"Locación", "Dosificadores_anios":"Año", "Dosificadores_marca":"Marca", "Dosificadores_gasto_agua":"Gasto de agua"})
+            dosificadores[col] = dosificadores[col].str.strip().str.replace(r"\s+", " ", regex=True)
+        dosificadores = dosificadores.rename(columns={
+            "Dosificadores_localidad": "Localidad", "Dosificadores_locacion": "Locación",
+            "Dosificadores_anios": "Año", "Dosificadores_marca": "Marca",
+            "Dosificadores_gasto_agua": "Gasto de agua",
+        })
+
+        payload = {
+            "nombreArchivo": f"Reporte_Municipal_{municipio}".replace(" ", "_"),
+            "titulo": f"Municipio: {municipio}",
+            "subtitulos": [f"Número de pozos: {numero_pozos}"],
+            "tablas": [
+                {
+                    "titulo": "Cloro Libre Residual",
+                    "columnas": [str(c) for c in cloro.columns],
+                    "filas": cloro.astype(str).values.tolist(),
+                },
+                {
+                    "titulo": "Dosificadores",
+                    "columnas": [str(c) for c in dosificadores.columns],
+                    "filas": dosificadores.astype(str).values.tolist(),
+                },
+            ],
+        }
 
         return (
-            # Pozo
+            # Pozo (sin cambios)
             False, no_update, no_update, no_update, no_update, no_update, no_update,
-                 no_update, no_update, no_update, no_update, no_update, no_update,
-                 
-                 # Municipal
-                 True, municipio, f"Numero de pozos: {numero_pozos}", cloro.to_dict('records'), [{"field": i} for i in cloro.columns], dosificadores.to_dict('records'), [{"field": i} for i in dosificadores.columns],
-                 municipio, f"Numero de pozos: {numero_pozos}", cloro.to_dict('records'), [{"field": i} for i in cloro.columns], dosificadores.to_dict('records'), [{"field": i} for i in dosificadores.columns],
 
-                 # Regional
-                False, no_update, no_update, no_update, no_update, no_update, no_update,
-                 no_update, no_update, no_update, no_update, no_update, no_update
-                 )
-    
+            # Municipal
+            True, municipio, f"Numero de pozos: {numero_pozos}",
+            cloro.to_dict("records"), [{"field": i} for i in cloro.columns],
+            dosificadores.to_dict("records"), [{"field": i} for i in dosificadores.columns],
+
+            # Regional (sin cambios)
+            False, no_update, no_update, no_update, no_update, no_update, no_update,
+
+            # PDF
+            payload,
+        )
+
+    # ------------------------------------------------------------
+    # Caso: REGIONAL
+    # ------------------------------------------------------------
     if trigger_id == "geojson" and feature and current_map == "regional":
-        print("Se disparo geojson y curren map es regional")
 
-        df = shp_regional.drop(columns=["geometry"], errors='ignore')
-
+        df = shp_regional.drop(columns=["geometry"], errors="ignore")
         properties = feature["properties"]
         region = properties.get("Region")
         numero_pozos = properties.get("Pozos_Municipio")
 
         df = df[df["Region"] == region]
 
-        cloro = df.loc[:, 'CLORO_2020':'CLORO_2025']
+        cloro = df.loc[:, "CLORO_2020":"CLORO_2025"]
         cloro = cloro.melt(
             value_vars=cloro.loc[:, "CLORO_2020":"CLORO_2025"].columns,
             var_name="Año",
-            value_name="Cloro Libre Residual"
+            value_name="Cloro Libre Residual",
         )
-
         cloro["Año"] = (
-            cloro["Año"]
-            .str.replace("CLORO_", "", regex=False)
-            .str.strip()
-            .str.replace(r"\s+", " ", regex=True)
+            cloro["Año"].str.replace("CLORO_", "", regex=False)
+            .str.strip().str.replace(r"\s+", " ", regex=True)
         )
-
         cloro["Limite"] = np.where(
             (cloro["Cloro Libre Residual"] >= 0.2) & (cloro["Cloro Libre Residual"] <= 1.5),
-            "Limite permisible",
-            "Fuera del limite permisible"
+            "Limite permisible", "Fuera del limite permisible",
         )
-
         cloro["Cloro Libre Residual"] = cloro["Cloro Libre Residual"].astype(str)
         cloro["Cloro Libre Residual"] = cloro["Cloro Libre Residual"].replace("-1.0", "No hay dato")
         cloro.loc[cloro["Cloro Libre Residual"] == "No hay dato", "Limite"] = "No hay dato"
 
-        dosificadores = df.loc[:, 'Dosificadores_localidad':'Dosificadores_gasto_agua']
+        dosificadores = df.loc[:, "Dosificadores_localidad":"Dosificadores_gasto_agua"]
         cols = dosificadores.loc[:, "Dosificadores_localidad":"Dosificadores_gasto_agua"].columns
-        
-        # Separar filas (equivalente a separate_rows)
         for col in cols:
             dosificadores[col] = dosificadores[col].str.split(",")
-            
         dosificadores = dosificadores.explode(cols.tolist())
-
-        # Quitar espacios extra (equivalente a str_squish)
         for col in cols:
-            dosificadores[col] = (
-                dosificadores[col]
-                .str.strip()                 # quita espacios inicio/fin
-                .str.replace(r"\s+", " ", regex=True)  # reduce múltiples espacios a uno
-            )
-        dosificadores = dosificadores.rename(columns={"Dosificadores_localidad":"Localidad", "Dosificadores_locacion":"Locación", "Dosificadores_anios":"Año", "Dosificadores_marca":"Marca", "Dosificadores_gasto_agua":"Gasto de agua"})
+            dosificadores[col] = dosificadores[col].str.strip().str.replace(r"\s+", " ", regex=True)
+        dosificadores = dosificadores.rename(columns={
+            "Dosificadores_localidad": "Localidad", "Dosificadores_locacion": "Locación",
+            "Dosificadores_anios": "Año", "Dosificadores_marca": "Marca",
+            "Dosificadores_gasto_agua": "Gasto de agua",
+        })
+
+        payload = {
+            "nombreArchivo": f"Reporte_Regional_{region}".replace(" ", "_"),
+            "titulo": f"Región: {region}",
+            "subtitulos": [f"Número de pozos: {numero_pozos}"],
+            "tablas": [
+                {
+                    "titulo": "Cloro Libre Residual",
+                    "columnas": [str(c) for c in cloro.columns],
+                    "filas": cloro.astype(str).values.tolist(),
+                },
+                {
+                    "titulo": "Dosificadores",
+                    "columnas": [str(c) for c in dosificadores.columns],
+                    "filas": dosificadores.astype(str).values.tolist(),
+                },
+            ],
+        }
 
         return (
-            # Pozo
+            # Pozo (sin cambios)
             False, no_update, no_update, no_update, no_update, no_update, no_update,
-                 no_update, no_update, no_update, no_update, no_update, no_update,
 
-                 # Municipal
-                 False, no_update, no_update, no_update, no_update, no_update, no_update,
-                 no_update, no_update, no_update, no_update, no_update, no_update,
-                 
-                 # Regional
-                 True, region, f"Numero de pozos: {numero_pozos}", cloro.to_dict('records'), [{"field": i} for i in cloro.columns], dosificadores.to_dict('records'), [{"field": i} for i in dosificadores.columns],
-                 region, f"Numero de pozos: {numero_pozos}", cloro.to_dict('records'), [{"field": i} for i in cloro.columns], dosificadores.to_dict('records'), [{"field": i} for i in dosificadores.columns]
-                 )
-    
-
-    if trigger_id == "close_popup_pozo":
-        return (False, no_update, no_update, no_update, no_update, no_update, no_update,
-                 no_update, no_update, no_update, no_update, no_update, no_update,
-                 
-                False, no_update, no_update, no_update, no_update, no_update, no_update,
-                 no_update, no_update, no_update, no_update, no_update, no_update,
-
-                False, no_update, no_update, no_update, no_update, no_update, no_update,
-                    no_update, no_update, no_update, no_update, no_update, no_update
-                 )
-    
-    if trigger_id == "close_popup_municipal":
-        return (False, no_update, no_update, no_update, no_update, no_update, no_update,
-                 no_update, no_update, no_update, no_update, no_update, no_update,
-                 
-                False, no_update, no_update, no_update, no_update, no_update, no_update,
-                 no_update, no_update, no_update, no_update, no_update, no_update,
-
-                False, no_update, no_update, no_update, no_update, no_update, no_update,
-                    no_update, no_update, no_update, no_update, no_update, no_update
-                 )
-    
-    if trigger_id == "close_popup_regional":
-        return (False, no_update, no_update, no_update, no_update, no_update, no_update,
-                    no_update, no_update, no_update, no_update, no_update, no_update,
-                    
-                    False, no_update, no_update, no_update, no_update, no_update, no_update,
-                    no_update, no_update, no_update, no_update, no_update, no_update,
-    
-                    False, no_update, no_update, no_update, no_update, no_update, no_update,
-                        no_update, no_update, no_update, no_update, no_update, no_update
-                    )
-    
-    return (False, no_update, no_update, no_update, no_update, no_update, no_update,
-             no_update, no_update, no_update, no_update, no_update, no_update,
-
+            # Municipal (sin cambios)
             False, no_update, no_update, no_update, no_update, no_update, no_update,
-                 no_update, no_update, no_update, no_update, no_update, no_update,
 
+            # Regional
+            True, region, f"Numero de pozos: {numero_pozos}",
+            cloro.to_dict("records"), [{"field": i} for i in cloro.columns],
+            dosificadores.to_dict("records"), [{"field": i} for i in dosificadores.columns],
+
+            # PDF
+            payload,
+        )
+
+    # ------------------------------------------------------------
+    # Cierre de cualquiera de los tres modales, o click "vacío" en el mapa
+    # ------------------------------------------------------------
+    if trigger_id in ("close_popup_pozo", "close_popup_municipal", "close_popup_regional"):
+        return (
             False, no_update, no_update, no_update, no_update, no_update, no_update,
-                no_update, no_update, no_update, no_update, no_update, no_update
-             
-             )
+            False, no_update, no_update, no_update, no_update, no_update, no_update,
+            False, no_update, no_update, no_update, no_update, no_update, no_update,
+            no_update,
+        )
+
+    raise PreventUpdate
+
+
 
    
 app.clientside_callback(
     """
-    function(n_clicks_pozo, n_clicks_municipal, n_clicks_regional, current_map_data) {
-
-        console.log("Mapa actual:", current_map_data);
-        
-
-        var div_a_imprimir = "";
-
-        if (current_map_data === "pozo") {
-            div_a_imprimir = "impresion_entorno_pozo";
-        } else if (current_map_data === "municipal") {
-            div_a_imprimir = "impresion_entorno_municipal";
-        } else if (current_map_data === "regional") {
-            div_a_imprimir = "impresion_entorno_regional";
-        } else {
-            console.warn("Estado de mapa desconocido:", current_map_data);
+    function(n_pozo, n_municipal, n_regional, datos) {
+        const ctx = window.dash_clientside.callback_context;
+        if (!ctx.triggered.length || !datos) {
+            return window.dash_clientside.no_update;
+        }
+        // Evita ejecutarse en la carga inicial (n_clicks == 0/None)
+        const trigger = ctx.triggered[0];
+        if (!trigger.value) {
             return window.dash_clientside.no_update;
         }
 
-        var elemento = document.getElementById(div_a_imprimir);
-        
-
-        var printContents = elemento.innerHTML;
-        var originalContents = document.body.innerHTML;
-
-        document.body.innerHTML = printContents;
-        window.print();
-
-        document.body.innerHTML = originalContents;
-        location.reload();
+        try {
+            window.generarReportePDF(datos);
+        } catch (err) {
+            console.error("Error generando el PDF:", err);
+        }
 
         return window.dash_clientside.no_update;
     }
@@ -632,7 +588,7 @@ app.clientside_callback(
     Input("descargar_pozo", "n_clicks"),
     Input("descargar_municipal", "n_clicks"),
     Input("descargar_regional", "n_clicks"),
-    State("current_map", "data"),
+    State("datos_descarga", "data"),
     prevent_initial_call=True,
 )
 

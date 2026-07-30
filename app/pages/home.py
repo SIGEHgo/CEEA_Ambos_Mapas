@@ -679,9 +679,23 @@ popup_modal_municipal = dbc.Modal(
             ]),
         dbc.ModalFooter(
             children=[
-                dbc.Button("Descargar", id="descargar_municipal", className="button-custom", n_clicks=0),    
-                dbc.Button("Cerrar", id="close_popup_municipal", className="button-custom", n_clicks=0)
-            ]
+                dbc.Button(
+                    [
+                        html.I(className="bi bi-file-earmark-pdf-fill"),
+                        html.Span("Descargar PDF", id="descargar_municipal_texto"),
+                    ],
+                    id="descargar_municipal",
+                    className="btn-download",
+                    n_clicks=0,
+                ),
+                dbc.Button(
+                    [html.I(className="bi bi-x-lg"), "Cerrar"],
+                    id="close_popup_municipal",
+                    className="btn-close-modal",
+                    n_clicks=0,
+                ),
+            ],
+            className="modal-footer-custom",
         ),
     ],
     id="popup_modal_municipal",
@@ -689,34 +703,7 @@ popup_modal_municipal = dbc.Modal(
     is_open=False
 )
 
-impresion_entorno_municipal = html.Div(
-    [
-        html.Div(
-            [
-                html.Img(src="assets/Imagenes/Planeacion_dorado.png", style={"height": "50px", "margin-right": "10px"}),
-                html.Img(src="assets/Imagenes/CEAA_dorado.png", style={"height": "50px", "margin-right": "10px"}),
-            ],
-            style={"flex": 1, "display": "flex", "align-items": "center", "justifyContent": "space-evenly"}
-        ),
-        html.Div(
-            [
-                impresion_texto_municipio_municipal
-            ],
-            style={"display": "flex", "justify-content": "center", "align-items": "center"}
-        ),             
-        dbc.ModalBody(
-            [
-                impresion_tabla_cloro_municipal,
-                impresion_texto_numero_pozos_municipal,
-                impresion_tabla_dosificadores_municipal,
-            ],
-            style={"flex": 1, "display": "flex", "flex-direction": "column", "justify-content": "center", "align-items": "center"}
-        ),
-    ],
-    id="impresion_entorno_municipal",
-    style={"display":"none"}
-)
-
+## Aqui estaba impresion_entorno_municipal
 
 ### regional
 popup_texto_region_regional= html.P(id="popup_texto_region_regional")
@@ -770,9 +757,23 @@ popup_modal_regional = dbc.Modal(
             ]),
         dbc.ModalFooter(
             children=[
-                dbc.Button("Descargar", id="descargar_regional", className="button-custom", n_clicks=0),    
-                dbc.Button("Cerrar", id="close_popup_regional", className="button-custom", n_clicks=0)
-            ]
+                dbc.Button(
+                    [
+                        html.I(className="bi bi-file-earmark-pdf-fill"),
+                        html.Span("Descargar PDF", id="descargar_regional_texto"),
+                    ],
+                    id="descargar_regional",
+                    className="btn-download",
+                    n_clicks=0,
+                ),
+                dbc.Button(
+                    [html.I(className="bi bi-x-lg"), "Cerrar"],
+                    id="close_popup_regional",
+                    className="btn-close-modal",
+                    n_clicks=0,
+                ),
+            ],
+            className="modal-footer-custom",
         ),
     ],
     id="popup_modal_regional",
@@ -780,34 +781,7 @@ popup_modal_regional = dbc.Modal(
     is_open=False
 )
 
-impresion_entorno_regional = html.Div(
-    [
-        html.Div(
-            [
-                html.Img(src="assets/Imagenes/Planeacion_dorado.png", style={"height": "50px", "margin-right": "10px"}),
-                html.Img(src="assets/Imagenes/CEAA_dorado.png", style={"height": "50px", "margin-right": "10px"}),
-            ],
-            style={"flex": 1, "display": "flex", "align-items": "center", "justifyContent": "space-evenly"}
-        ),
-        html.Div(
-            [
-                impresion_texto_region_regional
-            ],
-            style={"display": "flex", "justify-content": "center", "align-items": "center"}
-        ),
-        dbc.ModalBody(
-            [
-                impresion_tabla_cloro_regional,
-                impresion_texto_numero_pozos_regional,
-                impresion_tabla_dosificadores_regional,
-            ],
-            style={"flex": 1, "display": "flex", "flex-direction": "column", "justify-content": "center", "align-items": "center"}
-        ),
-    ],
-    id="impresion_entorno_regional",
-    style={"display":"none"}
-)
-
+# Aqui estaba impresion_entorno_regional
 ### Pozo
 
 popup_texto_localidad = html.P(id="popup_texto_localidad")
@@ -848,52 +822,43 @@ popup_modal_pozo = dbc.Modal(
                 popup_tabla_pozo
             ]),
         dbc.ModalFooter(
-            children=[
-                dbc.Button("Descargar", id="descargar_pozo", className="button-custom", n_clicks=0),    
-                dbc.Button("Cerrar", id="close_popup_pozo", className="button-custom", n_clicks=0)
-            ]
-        ),
+                    children=[
+                        dbc.Button(
+                            [
+                                html.I(className="bi bi-file-earmark-pdf-fill"),
+                                html.Span("Descargar PDF", id="descargar_pozo_texto"),
+                            ],
+                            id="descargar_pozo",
+                            className="btn-download",
+                            n_clicks=0,
+                        ),
+                        dbc.Button(
+                            [html.I(className="bi bi-x-lg"), "Cerrar"],
+                            id="close_popup_pozo",
+                            className="btn-close-modal",
+                            n_clicks=0,
+                        ),
+                    ],
+                    className="modal-footer-custom",
+                ),  
     ],
     id="popup_modal_pozo",
     size="xl",
     is_open=False
 )
 
-impresion_entorno_pozo = html.Div(
-    [
-        html.Div(
-            [
-                html.Img(src="assets/Imagenes/Planeacion_dorado.png", style={"height": "50px", "margin-right": "10px"}),
-                html.Img(src="assets/Imagenes/CEAA_dorado.png", style={"height": "50px", "margin-right": "10px"}),
-            ],
-            style={"flex": 1, "display": "flex", "align-items": "center", "justifyContent": "space-evenly"}
-        ),
-        html.Div(
-            [
-                impresion_texto_pozo
-            ],
-            style={"display": "flex", "justify-content": "center", "align-items": "center"}
-        ),
-        html.Div(
-             [
-                impresion_texto_municicio,
-                impresion_texto_localidad,
-                impresion_texto_region,
-             ],
-             style={"flex": 1, "display": "flex", "align-items": "center", "justifyContent": "space-evenly"}
-         ),
-                    
-        dbc.ModalBody(
-            [
-                impresion_tabla_pozo,
-            ],
-            style={"display": "flex", "justify-content": "center", "align-items": "center"}
-        ),
-    ],
-    id="impresion_entorno_pozo",
-    style={"display":"none"}
+#Aqui estaba impresion_entorno_pozo
+datos_descarga_store = dcc.Store(id="datos_descarga")
+toast_descarga = dbc.Toast(
+    "Tu reporte se descargó correctamente.",
+    id="toast_descarga",
+    header="Descarga completa",
+    icon="success",
+    is_open=False,
+    dismissable=True,
+    duration=3500,
+    className="toast-descarga",
 )
-
 
 
 
@@ -906,13 +871,15 @@ layout = dbc.Container([
     modal_question,
     simbologia_imagen,
     popup_modal_municipal,
-    impresion_entorno_municipal,
+    #impresion_entorno_municipal,
     popup_modal_regional,
-    impresion_entorno_regional,
+    #impresion_entorno_regional,
     popup_modal_pozo,
-    impresion_entorno_pozo,
+    #impresion_entorno_pozo,
     html.Div(id="dummy-print"),
     dcc.Store(id="current_map", data="municipal", storage_type="session"),  # Almacena el estado actual del mapa
+    datos_descarga_store,
+    toast_descarga
 ],
     fluid=True,
     style={'height': '100vh', 'width': '100vw', 'padding': '0', 'margin': '0'}
