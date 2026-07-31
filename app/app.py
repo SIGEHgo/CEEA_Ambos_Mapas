@@ -10,7 +10,7 @@ import re
 from dash_extensions.javascript import arrow_function, assign
 import geopandas as gpd
 import funciones_auxiliares
-from funciones_auxiliares import generarMapApartirEleccion_Municipal, generarMapApartirEleccion_Regional, obtenerCentroides_Municipales, obtenerCentroides_Regionales, generarMap_dosificadores, icon_pozos
+from funciones_auxiliares import generarMapApartirEleccion_Municipal, generarMapApartirEleccion_Regional, obtenerCentroides_Municipales, obtenerCentroides_Regionales, generarMap_dosificadores, crear_icono_color
 from dash.exceptions import PreventUpdate
 from flask import Flask
 import numpy as np
@@ -55,6 +55,7 @@ map_dosificadores = funciones_auxiliares.generarMap_dosificadores(arhivo_sph = s
 municipal_geo = funciones_auxiliares.obtenerCentroides_Municipales(shp_municipal)
 regional_geo = funciones_auxiliares.obtenerCentroides_Regionales(shp_regional)
 
+icon_pozos = funciones_auxiliares.crear_icono_color("black")
 
 server = Flask(__name__)
 

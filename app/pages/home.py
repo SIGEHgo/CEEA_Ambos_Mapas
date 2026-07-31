@@ -143,13 +143,19 @@ on_each_feature_potabilizadoras = assign("""
 
 # Clases para la paleta de colores
 classes = [-2, -0.0000000001, 0.199999999999999999, 1.5]
+CATEGORIAS_MUNICIPIO = [
+    {"label": "No hay dato",        "color": "rgb(205,205,205)"},
+    {"label": "CI < 0.2",           "color": "rgb(255,0,0)"},
+    {"label": "0,2 <= CI <= 1.5",   "color": "rgb(112,173,71)"},
+    {"label": "CI > 1.5",           "color": "rgb(255, 192, 0)"},
+]
 colorscale = ['rgb(205,205,205)', 'rgb(255,0,0)', 'rgb(112,173,71)', 'rgb(255, 192, 0)']
 style = dict(weight=2, opacity=1, color='white', dashArray='3', fillOpacity=0.7)
 
 # Crea colorbar.
 ctg = ["{}+".format(cls, classes[i + 1]) for i, cls in enumerate(classes[:-1])] + ["{}+".format(classes[-1])]
 colorbar = dlx.categorical_colorbar(
-    categories=["No hay dato", "CI < 0.2", "0,2 <= CI <= 1.5", "CI > 1.5"],
+    categories=[cat["label"] for cat in CATEGORIAS_MUNICIPIO],  
     colorscale=colorscale,
     width=300,
     height=30,
@@ -174,44 +180,43 @@ geojson = dl.GeoJSON(
     id="geojson"
 )
 
-icon_dosificadores = assign("""function(feature, latlng){
-const flag = L.icon(
-    {iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png`, shadowUrl: `https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png`, iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]}
-    );
-return L.marker(latlng, {icon: flag});
-}""")
+CAPAS_PUNTUALES = [
+    {
+        "nombre": "Dosificadores de Cloro",
+        "color": "yellow",
+        "data": map_dosificadores,
+        "on_each_feature": None,
+        "checked": False,
+    },
+    {
+        "nombre": "Purificadoras",
+        "color": "red",
+        "data": purificadoras,
+        "on_each_feature": on_each_feature_purificadoras,
+        "checked": False,
+    },
+    {
+        "nombre": "Potabilizadores",
+        "color": "blue",
+        "data": potabilizadoras,
+        "on_each_feature": on_each_feature_potabilizadoras,
+        "checked": False,
+    },
+]
 
-icon_purificadoras = assign("""function(feature, latlng){
-const flag = L.icon(
-    {iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png`, shadowUrl: `https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png`, iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]}
-    );
-return L.marker(latlng, {icon: flag});
-}""")
-
-icon_potabilizadores = assign("""function(feature, latlng){
-const flag = L.icon(
-    {iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png`, shadowUrl: `https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png`, iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]}
-    );
-return L.marker(latlng, {icon: flag});
-}""")
-
-
-geojson_dosificadores = dl.GeoJSON(
-    data=map_dosificadores,
-    pointToLayer=icon_dosificadores
-)
-
-geojson_purificadoras = dl.GeoJSON(
-    data=purificadoras,
-    pointToLayer=icon_purificadoras,
-    onEachFeature = on_each_feature_purificadoras
-)
-
-geojson_potabilizadores = dl.GeoJSON(
-    data=potabilizadoras,
-    pointToLayer=icon_potabilizadores,
-    onEachFeature = on_each_feature_potabilizadoras
-)
+# Genera un dl.Overlay por cada capa registrada arriba.
+overlays_puntuales = [
+    dl.Overlay(
+        children=[dl.GeoJSON(
+            data=capa["data"],
+            pointToLayer=funciones_auxiliares.crear_icono_color(capa["color"]),
+            onEachFeature=capa["on_each_feature"],
+        )],
+        name=capa["nombre"],
+        checked=capa["checked"],
+    )
+    for capa in CAPAS_PUNTUALES
+]
 
 ############################################
 ### Definición de Componentes del Layout ###
@@ -574,12 +579,7 @@ mapa = dbc.Row(
                 children=[
                     dl.TileLayer(),
                     dl.LayersControl(
-                        children=[
-                            dl.BaseLayer(children=[geojson], name="Cloro Residual Libre", checked=True),
-                            dl.Overlay(children=[geojson_dosificadores], name="Dosificadores de Cloro", checked=False),
-                            dl.Overlay(children=[geojson_purificadoras], name="Purificadoras", checked=False),
-                            dl.Overlay(children=[geojson_potabilizadores], name="Potabilizadores", checked=False)
-                        ],
+                        children=[dl.BaseLayer(children=[geojson], name="Cloro Residual Libre", checked=True)] + overlays_puntuales,
                         position="topright",
                         id="layers_control",
                         collapsed= False,  # Para que el control de capas esté expandido por defecto
@@ -607,12 +607,46 @@ mapa = dbc.Row(
 ##############
 
 simbologia_imagen = html.Div(
-    html.Img(src="assets/Imagenes/simbologia_corel.png", style={'width': 'auto', 'height': '24vh', 'margin': '0 0 0 0'}),
+    [
+        html.Div("Cloro Residual Libre", style={'color': 'black', 'fontSize': '12px', 'fontWeight': 'bold', 'marginBottom': '4px'}),
+        *[
+            html.Div(
+                [
+                    html.Div(style={
+                        'width': '20px', 'height': '20px', 'marginRight': '6px',
+                        'backgroundColor': cat["color"], 'border': '1px solid black',
+                        'flexShrink': '0'
+                    }),
+                    html.Span(cat["label"], style={'color': 'black', 'fontSize': '12px'})
+                ],
+                style={'display': 'flex', 'alignItems': 'center', 'marginBottom': '4px'}
+            )
+            for cat in CATEGORIAS_MUNICIPIO
+        ],
+
+        html.Div("Capas de puntos", style={'color': 'black', 'fontSize': '12px', 'fontWeight': 'bold', 'margin': '8px 0 4px 0'}),
+        *[
+            html.Div(
+                [
+                    html.Img(
+                        src=f"https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-{capa['color']}.png",
+                        style={'height': '20px', 'marginRight': '6px'}
+                    ),
+                    html.Span(capa["nombre"], style={'color': 'black', 'fontSize': '12px'})
+                ],
+                style={'display': 'flex', 'alignItems': 'center', 'marginBottom': '4px'}
+            )
+            for capa in CAPAS_PUNTUALES
+        ],
+    ],
     style={
         'position': 'absolute',
         'bottom': '25px',
         'right': '10px',
-        'zIndex': '1000'
+        'zIndex': '1000',
+        'backgroundColor': 'rgba(255, 255, 255, 0.8)',
+        'padding': '8px 10px',
+        'borderRadius': '6px'
     },
     className="simbologia_imagen_custom"
 )
@@ -682,7 +716,7 @@ popup_modal_municipal = dbc.Modal(
                 dbc.Button(
                     [
                         html.I(className="bi bi-file-earmark-pdf-fill"),
-                        html.Span("Descargar PDF", id="descargar_municipal_texto"),
+                        html.Span(" Descargar PDF", id="descargar_municipal_texto"),
                     ],
                     id="descargar_municipal",
                     className="btn-download",

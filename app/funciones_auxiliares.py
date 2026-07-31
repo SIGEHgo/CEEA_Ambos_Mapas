@@ -20,13 +20,6 @@ def generarMapApartirEleccion_Pozo(geojson, lista_eleccion):
     return geojson.__geo_interface__
 
 
-icon_pozos = assign("""function(feature, latlng){
-const flag = L.icon(
-    {iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png`, shadowUrl: `https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png`, iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]}
-    );
-return L.marker(latlng, {icon: flag});
-}""")
-
 def generarMap_dosificadores(arhivo_sph):
     geojson_data = {
         "type": "FeatureCollection",        # Dices que es geojson
@@ -97,3 +90,13 @@ def obtenerCentroides_Regionales(shp):
     regional_geometrias = regional_geometrias.drop(columns=["geometry"])
 
     return regional_geometrias
+
+
+
+def crear_icono_color(color):
+    return assign(f"""function(feature, latlng){{
+    const flag = L.icon(
+        {{iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-{color}.png`, shadowUrl: `https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png`, iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]}}
+        );
+    return L.marker(latlng, {{icon: flag}});
+    }}""")
