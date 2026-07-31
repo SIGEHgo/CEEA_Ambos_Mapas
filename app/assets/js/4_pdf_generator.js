@@ -81,19 +81,15 @@ async function generarReportePDF(payload) {
     doc.setTextColor(...blanco);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
-    doc.text(payload.tituloEncabezado || "Reporte de Acciones de Desinfección", margen, 26);
+    doc.text(payload.tituloEncabezado || "Reporte de Acciones de Desinfección", margen, 36);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     const fecha = new Date().toLocaleDateString("es-MX", {
         year: "numeric", month: "long", day: "numeric",
     });
-    doc.text(`Generado el ${fecha}`, margen, 42);
+    doc.text(`Generado el ${fecha}`, margen, 52);
 
-    if (payload.titulo) {
-        doc.setFontSize(9);
-        doc.text(txt(payload.titulo), margen, 56);
-    }
 
     // ── Logos (Planeación y CEAA), alineados a la derecha ───────────────────
     const alturaLogo = 24;

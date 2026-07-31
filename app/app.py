@@ -10,7 +10,7 @@ import re
 from dash_extensions.javascript import arrow_function, assign
 import geopandas as gpd
 import funciones_auxiliares
-from funciones_auxiliares import generarMapApartirEleccion_Municipal, generarMapApartirEleccion_Regional, obtenerCentroides_Municipales, obtenerCentroides_Regionales, generarMap_dosificadores
+from funciones_auxiliares import generarMapApartirEleccion_Municipal, generarMapApartirEleccion_Regional, obtenerCentroides_Municipales, obtenerCentroides_Regionales, generarMap_dosificadores, icon_pozos
 from dash.exceptions import PreventUpdate
 from flask import Flask
 import numpy as np
@@ -123,6 +123,7 @@ def modal_question_open(n1, n2, is_open):
 @app.callback(
     [
         Output("geojson", "data", allow_duplicate=True),
+        Output("geojson", "pointToLayer"),
         Output("current_map", "data"),
         Output("botton_municipal", "className"),
         Output("botton_regional", "className"),
@@ -158,7 +159,7 @@ def toggle_active(mun_clicks, reg_clicks, pozo_clicks, current_map, valor_actual
         )
         opciones = [{'label': mun, 'value': latitud} 
                     for mun, latitud in zip(municipal_geo.NOM_MUN, municipal_geo.latitud)]
-        return new_data, "municipal", "button-custom active", "button-custom", "button-custom", opciones, "slider-custom", "slider-custom-off", "municipal"#, on_each_feature_municipio
+        return new_data, None, "municipal", "button-custom active", "button-custom", "button-custom", opciones, "slider-custom", "slider-custom-off", "municipal"#, on_each_feature_municipio
 
     elif clicked == "botton_regional":
         # Se genera el mapa para el caso regional
@@ -167,7 +168,7 @@ def toggle_active(mun_clicks, reg_clicks, pozo_clicks, current_map, valor_actual
         )
         opciones = [{'label': mun, 'value': lat} 
                     for mun, lat in zip(regional_geo.Region, regional_geo.latitud)]
-        return new_data, "regional", "button-custom", "button-custom active", "button-custom", opciones, "slider-custom", "slider-custom-off", "regional"#, on_each_feature_region
+        return new_data, None, "regional", "button-custom", "button-custom active", "button-custom", opciones, "slider-custom", "slider-custom-off", "regional"#, on_each_feature_region
     elif clicked == "botton_pozo":
         # Se genera el mapa para el caso pozo
         new_data = funciones_auxiliares.generarMapApartirEleccion_Pozo(
@@ -175,7 +176,7 @@ def toggle_active(mun_clicks, reg_clicks, pozo_clicks, current_map, valor_actual
         )
         opciones = [{'label': mun, 'value': latitud} 
                     for mun, latitud in zip(municipal_geo.NOM_MUN, municipal_geo.latitud)]
-        return new_data, "pozo", "button-custom", "button-custom", "button-custom active", opciones, "slider-custom-off", "slider-custom", "pozo"#, on_each_feature_pozo
+        return new_data, icon_pozos,"pozo", "button-custom", "button-custom", "button-custom active", opciones, "slider-custom-off", "slider-custom", "pozo"#, on_each_feature_pozo
     raise PreventUpdate
 
 

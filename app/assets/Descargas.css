@@ -14,7 +14,7 @@
 }
 
 /* Botón principal: Descargar PDF — paleta institucional vino/dorado */
-.btn-download {
+/* .btn-download {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -27,13 +27,13 @@
     font-size: 0.9rem;
     box-shadow: 0 2px 6px rgba(98, 17, 50, 0.3);
     transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-}
+} */
 
-.btn-download:hover {
+/* .btn-download:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(98, 17, 50, 0.4);
     background: linear-gradient(135deg, #4d0e28, #a17d4f);
-}
+} */
 
 .btn-download:active {
     transform: translateY(0);

@@ -1,6 +1,19 @@
 window.dashExtensions = Object.assign({}, window.dashExtensions, {
     default: {
-        function0: function(feature, context) {
+        function0: function(feature, latlng) {
+            const flag = L.icon({
+                iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png`,
+                shadowUrl: `https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png`,
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            });
+            return L.marker(latlng, {
+                icon: flag
+            });
+        },
+        function1: function(feature, context) {
             const {
                 classes,
                 colorscale,
@@ -15,7 +28,7 @@ window.dashExtensions = Object.assign({}, window.dashExtensions, {
             }
             return style;
         },
-        function1: function(feature, layer, context) {
+        function2: function(feature, layer, context) {
 
 
             const sesion = sessionStorage.getItem('current_map');
@@ -50,30 +63,30 @@ window.dashExtensions = Object.assign({}, window.dashExtensions, {
                 );
             }
         },
-        function2: function(feature, layer) {
-                if (feature.properties) {
-                    layer.bindTooltip(
-                        `
-                <p> Municipio: <b> ${feature.properties.MUNICIPIO} </b> </p>
-                <p> Localidad: <b> ${feature.properties.LOCALIDAD} </b> </p>
-                <p> Fecha: <b> ${feature.properties.FECHA} </b> </p> 
-            `
-                    );
-                    layer.bindPopup(
-                        `
-                <p> Municipio: <b> ${feature.properties.MUNICIPIO} </b> </p>
-                <p> Localidad: <b> ${feature.properties.LOCALIDAD} </b> </p>
-                <p> Fecha: <b> ${feature.properties.FECHA} </b> </p> 
-            `
-                    );
-                }
-            }
-
-            ,
         function3: function(feature, layer) {
                 if (feature.properties) {
                     layer.bindTooltip(
                         `
+                <p> Municipio: <b> ${feature.properties.MUNICIPIO} </b> </p>
+                <p> Localidad: <b> ${feature.properties.LOCALIDAD} </b> </p>
+                <p> Fecha: <b> ${feature.properties.FECHA} </b> </p> 
+            `
+                    );
+                    layer.bindPopup(
+                        `
+                <p> Municipio: <b> ${feature.properties.MUNICIPIO} </b> </p>
+                <p> Localidad: <b> ${feature.properties.LOCALIDAD} </b> </p>
+                <p> Fecha: <b> ${feature.properties.FECHA} </b> </p> 
+            `
+                    );
+                }
+            }
+
+            ,
+        function4: function(feature, layer) {
+                if (feature.properties) {
+                    layer.bindTooltip(
+                        `
                 <p> Municipio: <b> ${feature.properties.Municipio} </b> </p>
                 <p> Localidad: <b> ${feature.properties.Localidad} </b> </p>
                 <p> Fecha: <b> ${feature.properties.Fecha} </b> </p> 
@@ -91,22 +104,9 @@ window.dashExtensions = Object.assign({}, window.dashExtensions, {
             }
 
             ,
-        function4: function(feature, latlng) {
-            const flag = L.icon({
-                iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png`,
-                shadowUrl: `https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png`,
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowSize: [41, 41]
-            });
-            return L.marker(latlng, {
-                icon: flag
-            });
-        },
         function5: function(feature, latlng) {
             const flag = L.icon({
-                iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png`,
+                iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png`,
                 shadowUrl: `https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png`,
                 iconSize: [25, 41],
                 iconAnchor: [12, 41],
@@ -119,7 +119,20 @@ window.dashExtensions = Object.assign({}, window.dashExtensions, {
         },
         function6: function(feature, latlng) {
             const flag = L.icon({
-                iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png`,
+                iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png`,
+                shadowUrl: `https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png`,
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            });
+            return L.marker(latlng, {
+                icon: flag
+            });
+        },
+        function7: function(feature, latlng) {
+            const flag = L.icon({
+                iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png`,
                 shadowUrl: `https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png`,
                 iconSize: [25, 41],
                 iconAnchor: [12, 41],
