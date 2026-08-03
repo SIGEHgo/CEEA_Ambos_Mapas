@@ -38,7 +38,7 @@ anios_nh = {i: anio for i, anio in enumerate(anios_nh)}
 #Carga de datos y definición de variables
 shp_municipal = gpd.read_file("./assets/Acciones_de_desinfeccion_municipal.geojson")
 shp_regional = gpd.read_file("./assets/Acciones_de_desinfeccion_regional.geojson")
-shp_dosificadores = gpd.read_file("./assets/Dosificadores.shp")
+shp_dosificadores = gpd.read_file("./assets/Dosificadores.geojson")
 potabilizadoras = gpd.read_file("./assets/Potabilizadoras.geojson").__geo_interface__
 purificadoras = gpd.read_file("./assets/Purificadoras.geojson").__geo_interface__
 geojson_pozo = gpd.read_file("./assets/Pozos.geojson")

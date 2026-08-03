@@ -1,0 +1,26 @@
+{
+"type": "FeatureCollection",
+"name": "Potabilizadoras",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-023", "Fecha": "13/10/2025", "Municipio": "Metztitlán", "Localidad": "Cerritos De Quimixtipec" }, "geometry": { "type": "Point", "coordinates": [ -98.829688294887333, 20.669184463392185 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-037", "Fecha": "15/10/2025", "Municipio": "Metztitlán", "Localidad": "Hacienda De Potreros" }, "geometry": { "type": "Point", "coordinates": [ -98.712857284161316, 20.504307540116923 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-043", "Fecha": "18/10/2025", "Municipio": "Tianguistengo", "Localidad": "Santa Mónica" }, "geometry": { "type": "Point", "coordinates": [ -98.665575138476129, 20.728939297961873 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-034", "Fecha": "21/10/2025", "Municipio": "Tlahuiltepa", "Localidad": "San Andresito" }, "geometry": { "type": "Point", "coordinates": [ -99.003487107698646, 20.813180478805119 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-039", "Fecha": "16/10/2025", "Municipio": "Huautla", "Localidad": "Cabecera Municipal" }, "geometry": { "type": "Point", "coordinates": [ -98.286700099005657, 21.031153257015681 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-041", "Fecha": "18/10/2025", "Municipio": "Huehuetla", "Localidad": "Cabecera Municipal Albergue" }, "geometry": { "type": "Point", "coordinates": [ -98.073976000726887, 20.459917165350511 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-040", "Fecha": "19/10/2025", "Municipio": "Tenango de Doria", "Localidad": "Cabecera Municipal" }, "geometry": { "type": "Point", "coordinates": [ -98.227130625165358, 20.337890633812986 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-038", "Fecha": "20/10/2025", "Municipio": "Calnali", "Localidad": "Atempa" }, "geometry": { "type": "Point", "coordinates": [ -98.489601558606907, 20.883337349165391 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-021", "Fecha": "21/10/2025", "Municipio": "Tlahuiltepa", "Localidad": "Lazaro Cardenas" }, "geometry": { "type": "Point", "coordinates": [ -98.969553366696132, 20.80902593012944 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-033", "Fecha": "15/10/2025", "Municipio": "Eloxochitlán", "Localidad": "Hualula" }, "geometry": { "type": "Point", "coordinates": [ -98.836265356638606, 20.708803798836225 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-036", "Fecha": "21/10/2025", "Municipio": "Tlahuiltepa", "Localidad": "La Concordia" }, "geometry": { "type": "Point", "coordinates": [ -98.994223246209273, 20.809406775757108 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-020", "Fecha": "18/10/2025", "Municipio": "Tianguistengo", "Localidad": "Pemuxco" }, "geometry": { "type": "Point", "coordinates": [ -98.56808796765236, 20.746294896563057 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-044", "Fecha": "18/10/2025", "Municipio": "Huehuetla", "Localidad": "Cabecera Municipal" }, "geometry": { "type": "Point", "coordinates": [ -98.077997120513402, 20.460099450123998 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-032", "Fecha": "16/10/2025", "Municipio": "Huautla", "Localidad": "Chalingo" }, "geometry": { "type": "Point", "coordinates": [ -98.218497443054488, 21.096116832041194 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-045", "Fecha": "24/10/2025", "Municipio": "Tianguistengo", "Localidad": "Zacatipan" }, "geometry": { "type": "Point", "coordinates": [ -98.510344525470231, 20.837958405858696 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-019", "Fecha": "16/10/2025", "Municipio": "Huautla", "Localidad": "Coatzonco" }, "geometry": { "type": "Point", "coordinates": [ -98.301953302755763, 20.989439173157134 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-035", "Fecha": "20/10/2025", "Municipio": "Tlahuiltepa", "Localidad": "Itztamichapa" }, "geometry": { "type": "Point", "coordinates": [ -98.956724020188361, 20.80254528047346 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-022", "Fecha": "23/10/2025", "Municipio": "Calnali", "Localidad": "Papatlatla" }, "geometry": { "type": "Point", "coordinates": [ -98.452329477977244, 20.900776402798261 ] } },
+{ "type": "Feature", "properties": { "Id. Nr": "VP500S-12-211201-018", "Fecha": "20/10/2025", "Municipio": "Tlahuiltepa", "Localidad": "San Andres Miraflores" }, "geometry": { "type": "Point", "coordinates": [ -99.002537149394684, 20.801481867983814 ] } }
+]
+}
