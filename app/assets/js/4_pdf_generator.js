@@ -213,6 +213,16 @@ async function generarReportePDF(payload) {
     // ══════════════════════════════════════════════════════════════════════
     // PIE DE PÁGINA institucional (todas las páginas)
     // ══════════════════════════════════════════════════════════════════════
+    // Normas aplicables al reporte. Se muestran de forma discreta: fuente
+    // pequeña (6.5pt) y color dorado (menos contrastante que el blanco del
+    // resto del pie), centradas en una franja delgada justo encima del pie
+    // principal. Editable vía payload.normasAplicables (array de strings);
+    // si no se manda, se usan las normas por defecto.
+    const normasAplicables = Array.isArray(payload.normasAplicables) && payload.normasAplicables.length
+        ? payload.normasAplicables
+        : ["ISO 9001:2015", "ISO/IEC 17025:2017"];
+    const textoNormas = normasAplicables.join("  ·  ");
+
     const alturaPie = 26;
     const totalPaginas = doc.internal.getNumberOfPages();
     for (let i = 1; i <= totalPaginas; i++) {
@@ -222,6 +232,12 @@ async function generarReportePDF(payload) {
         doc.rect(0, H - alturaPie, W, alturaPie, "F");
         doc.setFillColor(...dorado);
         doc.rect(0, H - alturaPie, W, 2, "F");
+
+        // Línea discreta de normas aplicables, justo por encima del pie
+        doc.setTextColor(...dorado);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(6.5);
+        doc.text(textoNormas, W / 2, H - alturaPie - 4, { align: "center" });
 
         doc.setTextColor(...blanco);
         doc.setFont("helvetica", "normal");
