@@ -178,8 +178,18 @@ path.leaflet-interactive:focus {
 }
 
 
+.dash-slider-thumb {
+    background-color: #9C2448 !important; /* Cambia el color del botón deslizante */
+    border-color: #9C2448 !important;
+}
 
+.dash-slider-root:not([data-included='false']) .dash-slider-range {
+    background-color: #9C2448 !important;
+}
 
+.dash-slider-thumb:focus {
+    outline: 2px solid #9C2448;
+}
 
 
 
