@@ -9,7 +9,7 @@ import geopandas as gpd
 from app import anios_nh
 
 import dash_bootstrap_components as dbc  # Importa Dash Bootstrap Components
-from dash import Dash, html, Output, Input, State, no_update,dcc
+from dash import Dash, html, Output, Input, State, no_update, dcc, callback
 import re
 from dash_extensions.javascript import arrow_function, assign
 import geopandas as gpd
@@ -606,7 +606,7 @@ mapa = dbc.Row(
 ### Layout ###
 ##############
 
-simbologia_imagen = html.Div(
+simbologia_cloro = html.Div(
     [
         html.Div("Cloro Residual Libre", style={'color': 'black', 'fontSize': '12px', 'fontWeight': 'bold', 'marginBottom': '4px'}),
         *[
@@ -623,21 +623,61 @@ simbologia_imagen = html.Div(
             )
             for cat in CATEGORIAS_MUNICIPIO
         ],
+    ],
+    id="simbologia_cloro",
+    style={'display': 'block'}
+)
+
+simbologia_pozo = html.Div(
+    [
+        html.Div("Pozos", style={'color': 'black', 'fontSize': '12px', 'fontWeight': 'bold', 'marginBottom': '4px'}),
+        html.Div(
+            [
+                html.Img(
+                    src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png",
+                    style={'height': '20px', 'marginRight': '6px'}
+                ),
+                html.Span("Pozo", style={'color': 'black', 'fontSize': '12px'})
+            ],
+            style={'display': 'flex', 'alignItems': 'center', 'marginBottom': '4px'}
+        ),
+    ],
+    id="simbologia_pozo",
+    style={'display': 'none'}
+)
+
+def generar_leyenda_capas_puntuales(overlays_activos):
+    """Genera las filas de la leyenda únicamente para los overlays actualmente activos en el mapa."""
+    overlays_activos = overlays_activos or []
+    return [
+        html.Div(
+            [
+                html.Img(
+                    src=f"https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-{capa['color']}.png",
+                    style={'height': '20px', 'marginRight': '6px'}
+                ),
+                html.Span(capa["nombre"], style={'color': 'black', 'fontSize': '12px'})
+            ],
+            style={'display': 'flex', 'alignItems': 'center', 'marginBottom': '4px'}
+        )
+        for capa in CAPAS_PUNTUALES
+        if capa["nombre"] in overlays_activos
+    ]
+
+simbologia_capas_puntuales = html.Div(
+    id="simbologia_capas_puntuales",
+    children=generar_leyenda_capas_puntuales(
+        [capa["nombre"] for capa in CAPAS_PUNTUALES if capa["checked"]]
+    )
+)
+
+simbologia_imagen = html.Div(
+    [
+        simbologia_cloro,
+        simbologia_pozo,
 
         html.Div("Capas de puntos", style={'color': 'black', 'fontSize': '12px', 'fontWeight': 'bold', 'margin': '8px 0 4px 0'}),
-        *[
-            html.Div(
-                [
-                    html.Img(
-                        src=f"https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-{capa['color']}.png",
-                        style={'height': '20px', 'marginRight': '6px'}
-                    ),
-                    html.Span(capa["nombre"], style={'color': 'black', 'fontSize': '12px'})
-                ],
-                style={'display': 'flex', 'alignItems': 'center', 'marginBottom': '4px'}
-            )
-            for capa in CAPAS_PUNTUALES
-        ],
+        simbologia_capas_puntuales,
     ],
     style={
         'position': 'absolute',
@@ -650,6 +690,13 @@ simbologia_imagen = html.Div(
     },
     className="simbologia_imagen_custom"
 )
+
+@callback(
+    Output("simbologia_capas_puntuales", "children"),
+    Input("layers_control", "overlays"),
+)
+def actualizar_simbologia_capas_puntuales(overlays_activos):
+    return generar_leyenda_capas_puntuales(overlays_activos)
 
 dash.register_page(__name__, 
                    path='/',
